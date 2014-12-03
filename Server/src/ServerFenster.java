@@ -185,8 +185,17 @@ public class ServerFenster extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         System.out.println("Doff!");
-        for (int i = 1; i < server.spielerliste.size(); i++) {
+        
+        // i gibt Anzahl der Clients an!?!?!
+        
+        for (int i = 2; i < server.spielerliste.size(); i++) {
             System.out.println(server.spielerliste.get(i).getBenutzername());
+        }
+        
+        try {
+            server.spielerlisteAnzahlAusgeben();
+        } catch (RemoteException ex) {
+            Logger.getLogger(ServerFenster.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

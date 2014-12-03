@@ -21,5 +21,13 @@ public interface IServer extends Remote {
      */
     
     public void clientAnmelden(String benutzername, IClient client) throws RemoteException;
+    
+    /**
+     * 
+     * @param spielerliste
+     * @throws RemoteException 
+     */
+    
     public void spielStarten(ArrayList<IClient> spielerliste) throws RemoteException;
+    public void spielerlisteAnzahlAusgeben() throws RemoteException;
 }

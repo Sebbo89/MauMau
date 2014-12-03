@@ -29,10 +29,13 @@ public class ServerImpl implements IServer {
     }
     
     @Override
-    public void clientAnmelden(String benutzername, IClient client) throws RemoteException {
+    public void clientAnmelden(String benutzername, IClient client) throws RemoteException{
 
         System.out.println(benutzername + " beim Spiel angemeldet!");
         benutzernamen.add(benutzername);
+        for (int i = 0; i < benutzernamen.size(); i++ ) {
+            System.out.println(benutzernamen.get(i).toString());
+        }
         spielerliste.add(client);
         //serverfenster.jPanelHinzufuegen(benutzername);
     } 
@@ -44,5 +47,10 @@ public class ServerImpl implements IServer {
             spielerliste.get(i).handNehmen(kartendeck, anzahlKarten);
             spielerliste.get(i).handAusgeben();
         }    
+    }
+    
+    @Override
+    public void spielerlisteAnzahlAusgeben() throws RemoteException {
+        System.out.println(this.spielerliste.size());
     }
 }

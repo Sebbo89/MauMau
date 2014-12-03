@@ -25,7 +25,7 @@ public class Client {
     IServer server = (IServer) registry.lookup( "Server" );
     
     // Hier kann der Benutzername eingegeben werden
-    String benutzername = "Sebbo";
+    String benutzername = "Tim";
     
     ClientImpl clientImpl = null;
     clientImpl = new ClientImpl(server, client, benutzername);
