@@ -1,5 +1,10 @@
 
+import java.io.Serializable;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import javax.swing.JLabel;
 
@@ -12,7 +17,7 @@ import javax.swing.JLabel;
  *
  * @author Sebbo
  */
-public class ServerImpl implements IServer {
+public class ServerImpl implements IServer, Serializable {
     public static ArrayList<IClient> spielerliste = new ArrayList();
     private ArrayList benutzernamen = new ArrayList();
     private ServerFenster serverfenster;
@@ -29,14 +34,19 @@ public class ServerImpl implements IServer {
     }
     
     @Override
-    public void clientAnmelden(String benutzername, IClient client) throws RemoteException{
+    public void clientAnmelden(String benutzername, String clientIndex) throws NotBoundException, RemoteException, AccessException{
 
         System.out.println(benutzername + " beim Spiel angemeldet!");
         benutzernamen.add(benutzername);
         for (int i = 0; i < benutzernamen.size(); i++ ) {
             System.out.println(benutzernamen.get(i).toString());
         }
-        spielerliste.add(client);
+        
+        //Find Client
+        Registry registry = LocateRegistry.getRegistry();
+        IClient tmpClient = (IClient) registry.lookup( clientIndex );
+        
+        spielerliste.add(tmpClient);
         //serverfenster.jPanelHinzufuegen(benutzername);
     } 
     
@@ -52,5 +62,10 @@ public class ServerImpl implements IServer {
     @Override
     public void spielerlisteAnzahlAusgeben() throws RemoteException {
         System.out.println(this.spielerliste.size());
+    }
+    
+    @Override
+    public ArrayList<IClient> spielerlisteAusgeben() throws RemoteException {
+        return this.spielerliste;
     }
 }

@@ -17,7 +17,7 @@ import java.rmi.registry.Registry;
 public class Client {
   private static IClient client;
   
-  
+  static int playerIndex = 0;
   public static void main( String[] args ) throws  RemoteException, NotBoundException, Exception{
     
     
@@ -25,13 +25,23 @@ public class Client {
     IServer server = (IServer) registry.lookup( "Server" );
     
     // Hier kann der Benutzername eingegeben werden
-    String benutzername = "Tim";
+    /*String benutzername = ""; 
+    switch(playerIndex++){
+        case 0: benutzername = "Sebbo"; break;
+        case 1: benutzername = "Paul"; break;
+        case 2: benutzername = "Peter"; break;
+        case 3: benutzername = "Daiana"; break;
+    }*/
     
-    ClientImpl clientImpl = null;
-    clientImpl = new ClientImpl(server, client, benutzername);
+    
+    ClientImpl clientImpl1 = new ClientImpl(server, "Sebbo");
+    ClientImpl clientImpl2 = new ClientImpl(server, "Paul");
+    ClientImpl clientImpl3 = new ClientImpl(server, "Peter");
+    ClientImpl clientImpl4 = new ClientImpl(server, "Daiana");
+   
   }
 
-    public Client() {
+    /*public Client() {
         this.client = (IClient) new Client();
-    }
+    }*/
 }

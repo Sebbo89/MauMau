@@ -1,4 +1,5 @@
 
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public interface IServer extends Remote {
      * @throws RemoteException
      */
     
-    public void clientAnmelden(String benutzername, IClient client) throws RemoteException;
+    public void clientAnmelden(String benutzername, String clientIndex) throws RemoteException, NotBoundException;
     
     /**
      * 
@@ -30,4 +31,5 @@ public interface IServer extends Remote {
     
     public void spielStarten(ArrayList<IClient> spielerliste) throws RemoteException;
     public void spielerlisteAnzahlAusgeben() throws RemoteException;
+    public ArrayList<IClient> spielerlisteAusgeben() throws RemoteException;
 }

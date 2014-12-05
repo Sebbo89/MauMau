@@ -1,5 +1,6 @@
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /*
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  * @author Sebbo
  */
 public interface IClient extends Remote {
-    public void handNehmen(ArrayList<Card> kartendeck, int anzahlKarten);
-    public void handAusgeben();
-    public String getBenutzername();
+    public void handNehmen(ArrayList<Card> kartendeck, int anzahlKarten) throws RemoteException;
+    public void handAusgeben() throws RemoteException;
+    public String getBenutzername() throws RemoteException;
 }

@@ -30,6 +30,7 @@ import javax.swing.JTextArea;
  */
 public class ServerFenster extends javax.swing.JFrame {
     private static ArrayList kartendeck;
+    private static ArrayList<IClient> spielerliste;
     private static ServerImpl server;
     private static IServer stub;
 
@@ -186,10 +187,18 @@ public class ServerFenster extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         System.out.println("Doff!");
         
-        // i gibt Anzahl der Clients an!?!?!
-        
-        for (int i = 2; i < server.spielerliste.size(); i++) {
-            System.out.println(server.spielerliste.get(i).getBenutzername());
+        try {
+            // i gibt Anzahl der Clients an!?!?! funktioniert nur ohne absturz wenn i <= size ist
+            this.spielerliste = server.spielerlisteAusgeben();
+        } catch (RemoteException ex) {
+            Logger.getLogger(ServerFenster.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        for (int i = 0; i < spielerliste.size(); i++) {
+            try {
+                System.out.println(spielerliste.get(i).getBenutzername());
+            } catch (RemoteException ex) {
+                Logger.getLogger(ServerFenster.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
         try {
