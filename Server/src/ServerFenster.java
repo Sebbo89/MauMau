@@ -31,6 +31,7 @@ import javax.swing.JTextArea;
 public class ServerFenster extends javax.swing.JFrame {
     private static ArrayList kartendeck;
     private static ArrayList<IClient> spielerliste;
+    private static ArrayList<IClient> readyListe;
     private static ServerImpl server;
     private static IServer stub;
 
@@ -188,7 +189,6 @@ public class ServerFenster extends javax.swing.JFrame {
         System.out.println("Doff!");
         
         try {
-            // i gibt Anzahl der Clients an!?!?! funktioniert nur ohne absturz wenn i <= size ist
             this.spielerliste = server.spielerlisteAusgeben();
         } catch (RemoteException ex) {
             Logger.getLogger(ServerFenster.class.getName()).log(Level.SEVERE, null, ex);
@@ -245,7 +245,11 @@ public class ServerFenster extends javax.swing.JFrame {
         });
         
         LocateRegistry.createRegistry( Registry.REGISTRY_PORT );
-
+        
+    spielerliste = new ArrayList(0);
+    readyListe = new ArrayList(0);
+    
+    // ServerObjekt erstellen und bei Registry anmelden
     server = new ServerImpl();
     stub = (IServer) UnicastRemoteObject.exportObject( server, 0 );
     Registry registry = LocateRegistry.getRegistry();
@@ -263,6 +267,38 @@ public class ServerFenster extends javax.swing.JFrame {
     
     kartendeck = Card.kartendeckErzeugen();
     Card.kartendeckAusgeben(kartendeck);
+    
+    
+    // Endlosschleife, die horcht, ob Spieler bereit sind
+    
+    boolean gameNotStarted = true;
+    
+    int anzahlSpielerReady = 0;
+    System.out.println("Anzahl bereiter Spieler: " + anzahlSpielerReady);
+    
+    while (gameNotStarted) {
+        
+        if (!server.spielerliste.isEmpty()) {
+            for (int i = 0; i < server.spielerliste.size(); i++) {
+
+                //wenn Spieler bereit von Spielerliste entfernen und der readyListe hinzufügen
+                if (server.spielerliste.get(i).getSpielerstatus()) {
+                    IClient tmpCl = server.spielerliste.get(i);
+                    server.spielerliste.remove(i);
+                    readyListe.add(tmpCl);
+                    anzahlSpielerReady++;
+                    System.out.println("Anzahl bereiter Spieler: " + anzahlSpielerReady);
+                }
+
+            }
+            
+            // Sobald mind. 2 Spieler bereit sind aus Schleife springen und Spiel starten
+            if (readyListe.size() >= 2) {
+                gameNotStarted = false;
+                server.spielStarten(readyListe);
+            }
+        }
+    }
     
     }
 

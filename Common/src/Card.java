@@ -1,4 +1,5 @@
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -11,7 +12,7 @@ import java.util.Collections;
  *
  * @author Sebbo
  */
-public class Card {
+public class Card implements Serializable{
     private String farbe = null;
     private String wert = null;
     private int kartenID ;

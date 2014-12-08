@@ -33,12 +33,8 @@ public class Client {
         case 3: benutzername = "Daiana"; break;
     }*/
     
-    
-    ClientImpl clientImpl1 = new ClientImpl(server, "Sebbo");
-    ClientImpl clientImpl2 = new ClientImpl(server, "Tim");
-    ClientImpl clientImpl3 = new ClientImpl(server, "Timä");
-    ClientImpl clientImpl4 = new ClientImpl(server, "Tom");
-   
+    String benutzername = "Fabi";
+    ClientImpl clientImpl1 = new ClientImpl(server, benutzername);
   }
 
     /*public Client() {
