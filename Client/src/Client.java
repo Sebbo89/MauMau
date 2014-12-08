@@ -35,9 +35,9 @@ public class Client {
     
     
     ClientImpl clientImpl1 = new ClientImpl(server, "Sebbo");
-    ClientImpl clientImpl2 = new ClientImpl(server, "Paul");
-    ClientImpl clientImpl3 = new ClientImpl(server, "Peter");
-    ClientImpl clientImpl4 = new ClientImpl(server, "Daiana");
+    ClientImpl clientImpl2 = new ClientImpl(server, "Tim");
+    ClientImpl clientImpl3 = new ClientImpl(server, "Timä");
+    ClientImpl clientImpl4 = new ClientImpl(server, "Tom");
    
   }
 
