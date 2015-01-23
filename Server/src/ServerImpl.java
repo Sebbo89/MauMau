@@ -23,7 +23,7 @@ public class ServerImpl implements IServer, Serializable {
     private ArrayList benutzernamen = new ArrayList();
     private ServerFenster serverfenster;
     private int anzahlKarten = 7;
-    
+    ArrayList<Card> kartendeck;
     /*
     public ServerImpl(ServerFenster serverFenster) {
         this.serverfenster = serverFenster;
@@ -52,12 +52,9 @@ public class ServerImpl implements IServer, Serializable {
     } 
     
     @Override
-    public void spielStarten(ArrayList<IClient> spielerliste) throws RemoteException {
-        ArrayList<Card> kartendeck = Card.kartendeckErzeugen();
-        for ( int i = 0; i < spielerliste.size(); i++  ) {
-            spielerliste.get(i).handNehmen(kartendeck, anzahlKarten);
-            spielerliste.get(i).handAusgeben();
-        }    
+    public void spielStarten(ArrayList<IClient> readyliste) throws RemoteException {
+        kartendeck = Card.kartendeckErzeugen();
+        this.kartenAnSpielerVerteilen(readyliste);
     }
     
     @Override
@@ -68,6 +65,18 @@ public class ServerImpl implements IServer, Serializable {
     @Override
     public ArrayList<IClient> spielerlisteAusgeben() throws RemoteException {
         return this.spielerliste;
+    }
+    
+    /**
+     *
+     * @param IClient
+     */
+    public void kartenAnSpielerVerteilen(ArrayList<IClient> readyliste) throws RemoteException {
+        for (int i = 0; i < readyliste.size(); i++) {
+            readyliste.get(i).handNehmen(kartendeck, anzahlKarten);
+            readyliste.get(i).handAusgeben();
+            System.out.println("Hand ausgeteilt.");
+        }
     }
 
     @Override
@@ -93,7 +102,7 @@ public class ServerImpl implements IServer, Serializable {
         } else {
             System.out.println("Anzahl bereiter Spieler: " + anzahlBereiterSpieler);
             System.out.println("Spiel wird gestartet.");
-            spielStarten(this.spielerliste);
+            spielStarten(this.readyListe);
         }
         
         anzahlBereiterSpieler = 0;
