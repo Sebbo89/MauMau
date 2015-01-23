@@ -1,13 +1,22 @@
+
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 /**
  *
- * @author daemonripper
+ * @author Sebbo
  */
 public class ClientFenster extends javax.swing.JFrame {
+    private static IClient client;
+    static int playerIndex = 0;
 
     /**
      * Creates new form ClientFenster
@@ -25,183 +34,36 @@ public class ClientFenster extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        playButton = new javax.swing.JButton();
-        drawButton = new javax.swing.JButton();
-        skipButton = new javax.swing.JButton();
-        benutzernameLabel = new javax.swing.JLabel();
-        chatPanel = new javax.swing.JPanel();
-        sendButton = new javax.swing.JButton();
-        chatInput = new javax.swing.JTextField();
-        chatScrollPane = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        spieler4Label = new javax.swing.JLabel();
-        spieler3Label = new javax.swing.JLabel();
-        spieler2Label = new javax.swing.JLabel();
-        ziehstapelLabel = new javax.swing.JLabel();
-        ablageLabel = new javax.swing.JLabel();
-        Hand = new javax.swing.JPanel();
-        card1Label = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Spieler-Client");
-        setBackground(new java.awt.Color(153, 255, 0));
 
-        playButton.setText("Karte spielen");
-        playButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                playButtonActionPerformed(evt);
-            }
-        });
-
-        drawButton.setText("Ziehen");
-
-        skipButton.setText("Aussetzen");
-
-        benutzernameLabel.setBackground(new java.awt.Color(153, 255, 0));
-        benutzernameLabel.setText("Spieler");
-
-        sendButton.setText("Senden");
-
-        chatInput.setText("Hier chatten!");
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        chatScrollPane.setViewportView(jTextArea1);
-
-        javax.swing.GroupLayout chatPanelLayout = new javax.swing.GroupLayout(chatPanel);
-        chatPanel.setLayout(chatPanelLayout);
-        chatPanelLayout.setHorizontalGroup(
-            chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chatPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(chatScrollPane)
-                    .addGroup(chatPanelLayout.createSequentialGroup()
-                        .addComponent(chatInput)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(sendButton)))
-                .addContainerGap())
-        );
-        chatPanelLayout.setVerticalGroup(
-            chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chatPanelLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chatInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGroup(chatPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(chatScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(35, Short.MAX_VALUE))
-        );
-
-        spieler4Label.setText("Spieler 4");
-
-        spieler3Label.setText("Spieler 3");
-
-        spieler2Label.setText("Spieler 2");
-
-        ziehstapelLabel.setText("Ziehstapel");
-        ziehstapelLabel.setToolTipText("Der Ziehstapel. Hiervon werden die Karten gezogen.");
-
-        ablageLabel.setText("Aktiver Stapel");
-
-        card1Label.setText("Karte 1 ");
-
-        javax.swing.GroupLayout HandLayout = new javax.swing.GroupLayout(Hand);
-        Hand.setLayout(HandLayout);
-        HandLayout.setHorizontalGroup(
-            HandLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(HandLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(card1Label)
-                .addContainerGap(524, Short.MAX_VALUE))
-        );
-        HandLayout.setVerticalGroup(
-            HandLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, HandLayout.createSequentialGroup()
-                .addContainerGap(44, Short.MAX_VALUE)
-                .addComponent(card1Label)
-                .addGap(42, 42, 42))
-        );
+        jButton1.setText("Hand ausgeben");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(chatPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(100, 100, 100)
-                        .addComponent(spieler2Label)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(spieler4Label))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(Hand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(benutzernameLabel)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(drawButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(playButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(skipButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(spieler3Label)
-                .addGap(365, 365, 365))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(249, 249, 249)
-                .addComponent(ziehstapelLabel)
-                .addGap(172, 172, 172)
-                .addComponent(ablageLabel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(283, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(46, 46, 46)
-                .addComponent(spieler3Label)
-                .addGap(49, 49, 49)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(spieler4Label)
-                    .addComponent(spieler2Label))
-                .addGap(56, 56, 56)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ziehstapelLabel)
-                    .addComponent(ablageLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(playButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(drawButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(skipButton)
-                            .addComponent(benutzernameLabel))
-                        .addGap(2, 2, 2)
-                        .addComponent(chatPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(Hand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(114, 114, 114))))
+                .addContainerGap(178, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(99, 99, 99))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_playButtonActionPerformed
-
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) throws RemoteException, NotBoundException, Exception {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -231,24 +93,28 @@ public class ClientFenster extends javax.swing.JFrame {
                 new ClientFenster().setVisible(true);
             }
         });
-    }
+        
+        Registry registry = LocateRegistry.getRegistry();
+    IServer server = (IServer) registry.lookup( "Server" );
+    
+    // Hier kann der Benutzername eingegeben werden
+    /*String benutzername = ""; 
+    switch(playerIndex++){
+        case 0: benutzername = "Sebbo"; break;
+        case 1: benutzername = "Paul"; break;
+        case 2: benutzername = "Peter"; break;
+        case 3: benutzername = "Daiana"; break;
+    }*/
+    
+    String benutzername = "Hugo";
+    ClientImpl clientImpl1 = new ClientImpl(server, benutzername);
+  }
+
+    /*public Client() {
+        this.client = (IClient) new Client();
+    }*/
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel Hand;
-    private javax.swing.JLabel ablageLabel;
-    private javax.swing.JLabel benutzernameLabel;
-    private javax.swing.JLabel card1Label;
-    private javax.swing.JTextField chatInput;
-    private javax.swing.JPanel chatPanel;
-    private javax.swing.JScrollPane chatScrollPane;
-    private javax.swing.JButton drawButton;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JButton playButton;
-    private javax.swing.JButton sendButton;
-    private javax.swing.JButton skipButton;
-    private javax.swing.JLabel spieler2Label;
-    private javax.swing.JLabel spieler3Label;
-    private javax.swing.JLabel spieler4Label;
-    private javax.swing.JLabel ziehstapelLabel;
+    private javax.swing.JButton jButton1;
     // End of variables declaration//GEN-END:variables
 }

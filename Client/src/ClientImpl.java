@@ -23,10 +23,12 @@ public class ClientImpl implements IClient, Serializable {
     private IClient client;
     private String benutzername;
     private ArrayList<Card> hand;
-    private boolean spielerReady = true;
+    private boolean spielerBereit = true;
+    private boolean spielerAmZug = false;
     
     private static int clientIndex = 0;
 	public ClientImpl(IServer server, String benutzername) throws Exception{
+                this.hand = new ArrayList();
 		this.benutzername = benutzername;
                 this.server = server;
                 this.server.clientAnmelden(this.benutzername, registerClient());
@@ -83,6 +85,28 @@ public class ClientImpl implements IClient, Serializable {
         
     @Override
         public boolean getSpielerstatus() throws RemoteException{
-            return this.spielerReady;
+            return this.spielerBereit;
         }
+        
+    @Override
+        public void bereitMelden() throws RemoteException{
+            this.spielerBereit = true;
+            this.server.readyListeChecken();
+        }
+        
+    @Override
+        public boolean getSpielerAmZug() throws RemoteException{
+            return this.spielerAmZug;
+        }
+
+    @Override
+    public void setSpielerAmZugTrue() throws RemoteException {
+        this.spielerAmZug = true;
+    }
+
+    @Override
+    public void setSpielerAmZugFalse() throws RemoteException {
+        this.spielerAmZug = false;
+    }
 }
+

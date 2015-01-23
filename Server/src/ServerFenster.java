@@ -186,23 +186,28 @@ public class ServerFenster extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextArea3KeyReleased
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        System.out.println("Doff!");
-        
         try {
-            this.spielerliste = server.spielerlisteAusgeben();
-        } catch (RemoteException ex) {
-            Logger.getLogger(ServerFenster.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        for (int i = 0; i < spielerliste.size(); i++) {
+            /*
             try {
-                System.out.println(spielerliste.get(i).getBenutzername());
+            this.spielerliste = server.spielerlisteAusgeben();
             } catch (RemoteException ex) {
-                Logger.getLogger(ServerFenster.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerFenster.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        
-        try {
+            for (int i = 0; i < spielerliste.size(); i++) {
+            try {
+            System.out.println(spielerliste.get(i).getBenutzername());
+            } catch (RemoteException ex) {
+            Logger.getLogger(ServerFenster.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            }
+            
+            try {
             server.spielerlisteAnzahlAusgeben();
+            } catch (RemoteException ex) {
+            Logger.getLogger(ServerFenster.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            */
+            server.readyListeChecken();
         } catch (RemoteException ex) {
             Logger.getLogger(ServerFenster.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -246,8 +251,8 @@ public class ServerFenster extends javax.swing.JFrame {
         
         LocateRegistry.createRegistry( Registry.REGISTRY_PORT );
         
-    spielerliste = new ArrayList(0);
-    readyListe = new ArrayList(0);
+    spielerliste = new ArrayList();
+    readyListe = new ArrayList();
     
     // ServerObjekt erstellen und bei Registry anmelden
     server = new ServerImpl();
@@ -265,40 +270,9 @@ public class ServerFenster extends javax.swing.JFrame {
     
     System.out.println("Yolobaer! Der Server steht!");
     
-    kartendeck = Card.kartendeckErzeugen();
-    Card.kartendeckAusgeben(kartendeck);
-    
-    
-    // Endlosschleife, die horcht, ob Spieler bereit sind
-    
-    boolean gameNotStarted = true;
-    
     int anzahlSpielerReady = 0;
     System.out.println("Anzahl bereiter Spieler: " + anzahlSpielerReady);
-    
-    while (gameNotStarted) {
-        
-        if (!server.spielerliste.isEmpty()) {
-            for (int i = 0; i < server.spielerliste.size(); i++) {
-
-                //wenn Spieler bereit von Spielerliste entfernen und der readyListe hinzufügen
-                if (server.spielerliste.get(i).getSpielerstatus()) {
-                    IClient tmpCl = server.spielerliste.get(i);
-                    server.spielerliste.remove(i);
-                    readyListe.add(tmpCl);
-                    anzahlSpielerReady++;
-                    System.out.println("Anzahl bereiter Spieler: " + anzahlSpielerReady);
-                }
-
-            }
-            
-            // Sobald mind. 2 Spieler bereit sind aus Schleife springen und Spiel starten
-            if (readyListe.size() >= 2) {
-                gameNotStarted = false;
-                server.spielStarten(readyListe);
-            }
-        }
-    }
+   
     
     }
 

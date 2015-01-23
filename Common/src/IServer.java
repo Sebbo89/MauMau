@@ -32,4 +32,5 @@ public interface IServer extends Remote {
     public void spielStarten(ArrayList<IClient> spielerliste) throws RemoteException;
     public void spielerlisteAnzahlAusgeben() throws RemoteException;
     public ArrayList<IClient> spielerlisteAusgeben() throws RemoteException;
+    public void readyListeChecken() throws RemoteException;
 }

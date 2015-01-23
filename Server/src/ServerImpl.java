@@ -19,6 +19,7 @@ import javax.swing.JLabel;
  */
 public class ServerImpl implements IServer, Serializable {
     public static ArrayList<IClient> spielerliste = new ArrayList();
+    public static ArrayList<IClient> readyListe = new ArrayList();
     private ArrayList benutzernamen = new ArrayList();
     private ServerFenster serverfenster;
     private int anzahlKarten = 7;
@@ -68,4 +69,35 @@ public class ServerImpl implements IServer, Serializable {
     public ArrayList<IClient> spielerlisteAusgeben() throws RemoteException {
         return this.spielerliste;
     }
+
+    @Override
+    public void readyListeChecken() throws RemoteException {
+        // spielerliste durchgehen und Spieler, die bereit sind, in ReadyListe verschieben
+        for (int i = 0; i < spielerliste.size(); i++) {
+            if (spielerliste.get(i).getSpielerstatus()) {
+                IClient tmpClient = spielerliste.get(i);
+                spielerliste.remove(spielerliste.get(i));
+                readyListe.add(tmpClient);
+            }
+        }
+        
+        int anzahlBereiterSpieler = 0;
+        for (int i = 0; i < readyListe.size(); i++) {
+            if (readyListe.get(i).getSpielerstatus()) {
+                anzahlBereiterSpieler++;
+            }
+        }
+        
+        if (anzahlBereiterSpieler < 2) {
+            System.out.println("Anzahl bereiter Spieler: " + anzahlBereiterSpieler);
+        } else {
+            System.out.println("Anzahl bereiter Spieler: " + anzahlBereiterSpieler);
+            System.out.println("Spiel wird gestartet.");
+            spielStarten(this.spielerliste);
+        }
+        
+        anzahlBereiterSpieler = 0;
+    }
+    
+    
 }
