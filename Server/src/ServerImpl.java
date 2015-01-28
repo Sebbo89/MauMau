@@ -107,6 +107,14 @@ public class ServerImpl implements IServer, Serializable {
         
         anzahlBereiterSpieler = 0;
     }
+
+    @Override
+    public void broadcastMessage(String message) throws RemoteException {
+        System.out.println(message);
+        for(int i =0; i<spielerliste.size(); i++) {
+            spielerliste.get(i).nachrichtEmpfangen(message);
+        }
+    }
     
     
 }

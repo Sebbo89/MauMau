@@ -17,6 +17,7 @@ public interface IClient extends Remote {
     public void handAusgeben() throws RemoteException;
     public String getBenutzername() throws RemoteException;
     public boolean getSpielerstatus() throws RemoteException;
+    public void nachrichtEmpfangen(String message) throws RemoteException;
     public void bereitMelden() throws RemoteException;
     public boolean getSpielerAmZug() throws RemoteException;
     public void setSpielerAmZugTrue() throws RemoteException;

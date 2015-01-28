@@ -5,6 +5,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -107,6 +108,18 @@ public class ClientImpl implements IClient, Serializable {
     @Override
     public void setSpielerAmZugFalse() throws RemoteException {
         this.spielerAmZug = false;
+    }
+    
+    /*
+    Methode, die wartet, vom Server ausgelöst zu werden und dann eine Nachricht übermittelt und zurückgibt.
+    */
+    
+    public void nachrichtEmpfangen(String message) throws RemoteException {
+        System.out.println(message);
+    }
+
+    public IServer getServer() {
+        return this.server;
     }
 }
 
