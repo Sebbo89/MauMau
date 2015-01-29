@@ -22,28 +22,20 @@ public class ClientImpl implements IClient, Serializable {
     private static final long serialVersionUID = 1L;
     //private ArrayList<Card> cards;
     private IServer server;
+    private ArrayList<Card> hand;
     private IClient client;
     private ClientFenster clientFenster;
     private String benutzername;
-    private ArrayList<Card> hand;
     private boolean spielerBereit = false;
     private boolean spielerAmZug = false;
     
     private static int clientIndex = 0;
 	public ClientImpl(IServer server, String benutzername, ClientFenster clientFenster) throws Exception{
                 this.clientFenster = clientFenster;
-                this.hand = new ArrayList();
 		this.benutzername = benutzername;
                 this.server = server;
                 this.server.clientAnmelden(this.benutzername, registerClient());
 	}       
-        
-        public void handNehmen(ArrayList<Card> kartendeck, int anzahlKarten) {
-            for (int i = 0; i < anzahlKarten; i++) {
-                this.hand.add(kartendeck.get(0));
-                kartendeck.remove(kartendeck.get(0));
-            }
-        }
         
         int playerIndex;
         private String registerClient() throws RemoteException{
@@ -63,20 +55,8 @@ public class ClientImpl implements IClient, Serializable {
             return key;
         }
         
-        private int getNumberOfPlayers(){
-            String keyNumOfPlayers = "playerIndex";
-            //Registry=> playerIndex:int
-            
-            return -1;
-        }
-        private void setNumberOfPlayers(){
-           //Registry <= playerIndex:int 
-        }
-        @Override
-        public void handAusgeben() throws RemoteException{
-            for (Card karte : hand) {
-                System.out.println(karte.getFarbe() + " - " + karte.getWert() + " - " + karte.getID());
-            }
+        public IServer getServer() throws RemoteException {
+            return this.server;
         }
         
     @Override
@@ -92,7 +72,7 @@ public class ClientImpl implements IClient, Serializable {
     @Override
         public void bereitMelden() throws RemoteException{
             this.spielerBereit = true;
-            this.server.readyListeChecken();
+            this.server.listenChecken();
         }
         
     @Override
@@ -134,8 +114,21 @@ public class ClientImpl implements IClient, Serializable {
         clientFenster.nachrichtInTextAreaEinfuegen(message);
     }
 
-    public IServer getServer() {
-        return this.server;
+    @Override
+    public void handNehmen(ArrayList<Card> kartendeck, int anzahlKarten) throws RemoteException {
+        hand = new ArrayList();
+        for (int i = 0; i < anzahlKarten; i++) {
+            Card tmpCard = kartendeck.get(0);
+            kartendeck.remove(kartendeck.get(0));
+            hand.add(tmpCard);
+        }
+    }
+
+    @Override
+    public void handAusgeben() throws RemoteException {
+        for (int i = 0; i < hand.size(); i++) {
+            System.out.println(hand.get(i).getFarbe() + " - " + hand.get(i).getWert() + " " + hand.get(i).getID());
+        }
     }
 }
 

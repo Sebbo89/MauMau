@@ -24,7 +24,7 @@ public class ServerImpl implements IServer, Serializable {
     private ArrayList benutzernamen = new ArrayList();
     private ServerFenster serverfenster;
     private int anzahlKarten = 7;
-    ArrayList<Card> kartendeck;
+    private static ArrayList<Card> kartendeck;
     /*
     public ServerImpl(ServerFenster serverFenster) {
         this.serverfenster = serverFenster;
@@ -55,7 +55,7 @@ public class ServerImpl implements IServer, Serializable {
     @Override
     public void spielStarten(ArrayList<IClient> readyliste) throws RemoteException {
         kartendeck = Card.kartendeckErzeugen();
-        this.kartenAnSpielerVerteilen(readyliste);
+        this.kartenAnSpielerVerteilen(readyliste, kartendeck);
     }
     
     @Override
@@ -72,7 +72,7 @@ public class ServerImpl implements IServer, Serializable {
      *
      * @param IClient
      */
-    public void kartenAnSpielerVerteilen(ArrayList<IClient> readyliste) throws RemoteException {
+    public void kartenAnSpielerVerteilen(ArrayList<IClient> readyliste, ArrayList<Card> kartendeck) throws RemoteException {
         for (int i = 0; i < readyliste.size(); i++) {
             readyliste.get(i).handNehmen(kartendeck, anzahlKarten);
             readyliste.get(i).handAusgeben();
@@ -81,7 +81,7 @@ public class ServerImpl implements IServer, Serializable {
     }
 
     @Override
-    public void readyListeChecken() throws RemoteException {
+    public void listenChecken() throws RemoteException {
         // spielerliste durchgehen und Spieler, die bereit sind, in ReadyListe verschieben
         for (int i = 0; i < spielerliste.size(); i++) {
             if (spielerliste.get(i).getSpielerstatus()) {
@@ -90,7 +90,7 @@ public class ServerImpl implements IServer, Serializable {
                 readyListe.add(tmpClient);
             }
         }
-        
+        // readyListe durchgehen und Spieler, die nicht mehr bereit sind, in Spielerliste verschieben
         for (int i = 0; i < readyListe.size(); i++) {
             if (!readyListe.get(i).getSpielerstatus()) {
                 IClient tmpClient = readyListe.get(i);

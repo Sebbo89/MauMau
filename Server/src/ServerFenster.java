@@ -200,7 +200,7 @@ public class ServerFenster extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-            server.readyListeChecken();
+            server.listenChecken();
         } catch (RemoteException ex) {
             Logger.getLogger(ServerFenster.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -208,11 +208,10 @@ public class ServerFenster extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
-            // TODO add your handling code here:
-            server.readyListeChecken();
             if (server.readyListe.size() > 1) {
-            server.spielStarten(server.readyListe);} else
-            {
+            server.spielStarten(server.readyListe);
+            System.out.println("Spiel wird gestartet, Freund.");
+            } else {
                 System.out.println("Nicht genuegend Spieler bereit!");
             }
         } catch (RemoteException ex) {

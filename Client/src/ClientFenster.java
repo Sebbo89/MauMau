@@ -177,6 +177,7 @@ public class ClientFenster extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             clientImpl.setSpielerBereitTrue();
+            clientImpl.getServer().listenChecken();
             this.jTextArea2.append("Du hast dich als bereit gemeldet! \n");
         } catch (RemoteException ex) {
             Logger.getLogger(ClientFenster.class.getName()).log(Level.SEVERE, null, ex);
