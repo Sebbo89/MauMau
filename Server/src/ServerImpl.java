@@ -7,6 +7,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -90,6 +91,14 @@ public class ServerImpl implements IServer, Serializable {
             }
         }
         
+        for (int i = 0; i < readyListe.size(); i++) {
+            if (!readyListe.get(i).getSpielerstatus()) {
+                IClient tmpClient = readyListe.get(i);
+                readyListe.remove(readyListe.get(i));
+                spielerliste.add(tmpClient);
+            }
+        }
+        
         int anzahlBereiterSpieler = 0;
         for (int i = 0; i < readyListe.size(); i++) {
             if (readyListe.get(i).getSpielerstatus()) {
@@ -97,18 +106,10 @@ public class ServerImpl implements IServer, Serializable {
             }
         }
         
-        if (anzahlBereiterSpieler < 2) {
-            System.out.println("Anzahl bereiter Spieler: " + anzahlBereiterSpieler);
-        } else {
-            System.out.println("Anzahl bereiter Spieler: " + anzahlBereiterSpieler);
-            System.out.println("Spiel wird gestartet.");
-            spielStarten(this.readyListe);
-        }
-        
+        System.out.println("Anzahl bereiter Spieler: " + anzahlBereiterSpieler);
         anzahlBereiterSpieler = 0;
     }
 
-    @Override
     public void broadcastMessage(String message) throws RemoteException {
         System.out.println(message);
         for(int i =0; i<spielerliste.size(); i++) {

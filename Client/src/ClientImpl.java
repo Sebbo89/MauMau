@@ -6,6 +6,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.swing.JTextArea;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -22,22 +23,21 @@ public class ClientImpl implements IClient, Serializable {
     //private ArrayList<Card> cards;
     private IServer server;
     private IClient client;
+    private ClientFenster clientFenster;
     private String benutzername;
     private ArrayList<Card> hand;
-    private boolean spielerBereit = true;
+    private boolean spielerBereit = false;
     private boolean spielerAmZug = false;
     
     private static int clientIndex = 0;
-	public ClientImpl(IServer server, String benutzername) throws Exception{
+	public ClientImpl(IServer server, String benutzername, ClientFenster clientFenster) throws Exception{
+                this.clientFenster = clientFenster;
                 this.hand = new ArrayList();
 		this.benutzername = benutzername;
                 this.server = server;
                 this.server.clientAnmelden(this.benutzername, registerClient());
-	}
+	}       
         
-        
-        
-        @Override
         public void handNehmen(ArrayList<Card> kartendeck, int anzahlKarten) {
             for (int i = 0; i < anzahlKarten; i++) {
                 this.hand.add(kartendeck.get(0));
@@ -110,12 +110,28 @@ public class ClientImpl implements IClient, Serializable {
         this.spielerAmZug = false;
     }
     
+    public void setSpielerBereitTrue() throws RemoteException {
+        this.spielerBereit = true;
+    }
+    
+    public void setSpielerBereitFalse() throws RemoteException {
+        this.spielerBereit = false;
+    }
+    
     /*
     Methode, die wartet, vom Server ausgelöst zu werden und dann eine Nachricht übermittelt und zurückgibt.
     */
+
+    /**
+     *
+     * @param message
+     * @throws RemoteException
+     */
+    
     
     public void nachrichtEmpfangen(String message) throws RemoteException {
-        System.out.println(message);
+        // Code
+        clientFenster.nachrichtInTextAreaEinfuegen(message);
     }
 
     public IServer getServer() {

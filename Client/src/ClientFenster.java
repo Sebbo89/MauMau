@@ -1,13 +1,17 @@
 
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -23,12 +27,28 @@ public class ClientFenster extends javax.swing.JFrame {
     private static IClient client;
     static int playerIndex = 0;
     private static ClientImpl clientImpl;
-
+    private ClientFenster fenster = this;
     /**
      * Creates new form ClientFenster
-     */
-    public ClientFenster() {
+    */
+    
+    public JTextArea getJTextArea2() {
+        return jTextArea2;
+    }
+    
+    public ClientFenster() throws Exception {
         initComponents();
+        
+        Registry registry = LocateRegistry.getRegistry();
+        IServer server = (IServer) registry.lookup( "Server" );
+        String benutzername = "aHorseWithNoName";
+        clientImpl = new ClientImpl(server, benutzername, this);
+        
+        jTextArea1.setLineWrap(true);
+        jTextArea1.setWrapStyleWord(true);
+        
+        jTextArea2.setLineWrap(true);
+        jTextArea2.setWrapStyleWord(true);
     }
 
     /**
@@ -45,10 +65,21 @@ public class ClientFenster extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea2 = new javax.swing.JTextArea();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jButton1.setText("Hand ausgeben");
+        jButton1.setText("Bereit!");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -63,6 +94,18 @@ public class ClientFenster extends javax.swing.JFrame {
         jTextArea2.setRows(5);
         jScrollPane2.setViewportView(jTextArea2);
 
+        jButton2.setText("Nicht bereit!");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton2MouseClicked(evt);
+            }
+        });
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -71,22 +114,27 @@ public class ClientFenster extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(178, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(50, 50, 50)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 68, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)))
+                .addContainerGap())
         );
 
         pack();
@@ -102,9 +150,38 @@ public class ClientFenster extends javax.swing.JFrame {
             } catch (RemoteException ex) {
                 Logger.getLogger(ClientFenster.class.getName()).log(Level.SEVERE, null, ex);
             }
+
             jTextArea1.setText(null);
         }
     }//GEN-LAST:event_jTextArea1KeyReleased
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+    
+    }//GEN-LAST:event_jButton1MouseClicked
+
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2MouseClicked
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try {
+            // TODO add your handling code here:
+            clientImpl.setSpielerBereitFalse();
+            this.jTextArea2.append("Du hast dich als nicht bereit gemeldet! \n");
+        } catch (RemoteException ex) {
+            Logger.getLogger(ClientFenster.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            // TODO add your handling code here:
+            clientImpl.setSpielerBereitTrue();
+            this.jTextArea2.append("Du hast dich als bereit gemeldet! \n");
+        } catch (RemoteException ex) {
+            Logger.getLogger(ClientFenster.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -136,35 +213,39 @@ public class ClientFenster extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ClientFenster().setVisible(true);
+                try {
+                    new ClientFenster().setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(ClientFenster.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
-        
-        Registry registry = LocateRegistry.getRegistry();
-    IServer server = (IServer) registry.lookup( "Server" );
-    
-    // Hier kann der Benutzername eingegeben werden
-    /*String benutzername = ""; 
-    switch(playerIndex++){
-        case 0: benutzername = "Sebbo"; break;
-        case 1: benutzername = "Paul"; break;
-        case 2: benutzername = "Peter"; break;
-        case 3: benutzername = "Daiana"; break;
-    }*/
-    
-    String benutzername = "Sebbo";
-    clientImpl = new ClientImpl(server, benutzername);
-  }
+    }
 
+   
     /*public Client() {
         this.client = (IClient) new Client();
     }*/
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
     // End of variables declaration//GEN-END:variables
-}
+
+    /**
+     *
+     * @param message
+     */
+    public void nachrichtInTextAreaEinfuegen(String message) throws RemoteException {
+        this.jTextArea2.append(message);
+        jTextArea2.setCaretPosition(jTextArea2.getText().length() - 1);        
+    }
+
+    
+    
+} 

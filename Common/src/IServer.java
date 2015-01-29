@@ -3,6 +3,7 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import javax.swing.JTextArea;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -33,5 +34,11 @@ public interface IServer extends Remote {
     public void spielerlisteAnzahlAusgeben() throws RemoteException;
     public ArrayList<IClient> spielerlisteAusgeben() throws RemoteException;
     public void readyListeChecken() throws RemoteException;
-    public void broadcastMessage(String nextLine) throws RemoteException;
+
+    /**
+     *
+     * @param nextLine
+     * @throws RemoteException
+     */
+    public void broadcastMessage(String message) throws RemoteException;
 }
