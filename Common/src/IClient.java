@@ -14,7 +14,7 @@ import javax.swing.JTextArea;
  * @author Sebbo
  */
 public interface IClient extends Remote {
-    public void handNehmen(ArrayList<Card> kartendeck, int anzahlKarten) throws RemoteException;
+    public void handNehmen(int anzahlKarten) throws RemoteException;
     public void handAusgeben() throws RemoteException;
     public String getBenutzername() throws RemoteException;
     public boolean getSpielerstatus() throws RemoteException;

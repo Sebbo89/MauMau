@@ -114,13 +114,12 @@ public class ClientImpl implements IClient, Serializable {
         clientFenster.nachrichtInTextAreaEinfuegen(message);
     }
 
-    @Override
-    public void handNehmen(ArrayList<Card> kartendeck, int anzahlKarten) throws RemoteException {
+    public void handNehmen(int anzahlKarten) throws RemoteException {
         hand = new ArrayList();
         for (int i = 0; i < anzahlKarten; i++) {
-            Card tmpCard = kartendeck.get(0);
-            kartendeck.remove(kartendeck.get(0));
-            hand.add(tmpCard);
+            hand.add(getServer().getKartendeck().get(0));
+            // Aufruf der Methode, um Karte aus Deck zu löschen
+            this.getServer().entferneKarteAusDeck(0);
         }
     }
 
@@ -130,5 +129,6 @@ public class ClientImpl implements IClient, Serializable {
             System.out.println(hand.get(i).getFarbe() + " - " + hand.get(i).getWert() + " " + hand.get(i).getID());
         }
     }
+
 }
 

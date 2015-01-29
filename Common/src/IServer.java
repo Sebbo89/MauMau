@@ -34,7 +34,9 @@ public interface IServer extends Remote {
     public void spielerlisteAnzahlAusgeben() throws RemoteException;
     public ArrayList<IClient> spielerlisteAusgeben() throws RemoteException;
     public void listenChecken() throws RemoteException;
-
+    public ArrayList<Card> getKartendeck() throws RemoteException;
+    public Card entferneKarteAusDeck(int index) throws RemoteException;
+    
     /**
      *
      * @param nextLine

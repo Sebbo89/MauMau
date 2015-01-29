@@ -55,7 +55,7 @@ public class ServerImpl implements IServer, Serializable {
     @Override
     public void spielStarten(ArrayList<IClient> readyliste) throws RemoteException {
         kartendeck = Card.kartendeckErzeugen();
-        this.kartenAnSpielerVerteilen(readyliste, kartendeck);
+        this.kartenAnSpielerVerteilen(readyliste);
     }
     
     @Override
@@ -72,9 +72,9 @@ public class ServerImpl implements IServer, Serializable {
      *
      * @param IClient
      */
-    public void kartenAnSpielerVerteilen(ArrayList<IClient> readyliste, ArrayList<Card> kartendeck) throws RemoteException {
+    public void kartenAnSpielerVerteilen(ArrayList<IClient> readyliste) throws RemoteException {
         for (int i = 0; i < readyliste.size(); i++) {
-            readyliste.get(i).handNehmen(kartendeck, anzahlKarten);
+            readyliste.get(i).handNehmen(anzahlKarten);
             readyliste.get(i).handAusgeben();
             System.out.println("Hand ausgeteilt.");
         }
@@ -117,5 +117,13 @@ public class ServerImpl implements IServer, Serializable {
         }
     }
     
+    public ArrayList<Card> getKartendeck() {
+        return this.kartendeck;
+    }
+    
+    @Override
+    public Card entferneKarteAusDeck(int index){ 
+        return getKartendeck().remove(index);
+    }
     
 }
