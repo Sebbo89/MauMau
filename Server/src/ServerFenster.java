@@ -209,8 +209,8 @@ public class ServerFenster extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
             if (server.readyListe.size() > 1) {
+            System.out.println("Spiel wird gestartet, mein Freund.");
             server.spielStarten(server.readyListe);
-            System.out.println("Spiel wird gestartet, Freund.");
             } else {
                 System.out.println("Nicht genuegend Spieler bereit!");
             }

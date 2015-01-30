@@ -25,6 +25,7 @@ public class ServerImpl implements IServer, Serializable {
     private ServerFenster serverfenster;
     private int anzahlKarten = 7;
     private static ArrayList<Card> kartendeck;
+    private Card topCard = null;
     /*
     public ServerImpl(ServerFenster serverFenster) {
         this.serverfenster = serverFenster;
@@ -55,7 +56,13 @@ public class ServerImpl implements IServer, Serializable {
     @Override
     public void spielStarten(ArrayList<IClient> readyliste) throws RemoteException {
         kartendeck = Card.kartendeckErzeugen();
+        // Karte als topCard deklarieren und aus Deck entfernen
+        topCard = kartendeck.get(0);
+        this.entferneKarteAusDeck(0);
+        
         this.kartenAnSpielerVerteilen(readyliste);
+        
+        System.out.println(topCard.getFarbe() + " - " + topCard.getWert() + " - " + topCard.getID());
     }
     
     @Override
@@ -76,7 +83,7 @@ public class ServerImpl implements IServer, Serializable {
         for (int i = 0; i < readyliste.size(); i++) {
             readyliste.get(i).handNehmen(anzahlKarten);
             readyliste.get(i).handAusgeben();
-            System.out.println("Hand ausgeteilt.");
+            System.out.println(anzahlKarten + " Karten an " + readyliste.get(i).getBenutzername() + " ausgeteilt.");
         }
     }
 
