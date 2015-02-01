@@ -6,6 +6,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
 /*
@@ -128,6 +129,16 @@ public class ClientImpl implements IClient, Serializable {
         for (int i = 0; i < hand.size(); i++) {
             System.out.println(hand.get(i).getFarbe() + " - " + hand.get(i).getWert() + " " + hand.get(i).getID());
         }
+    }
+
+    public void clientFensterAusblenden() throws RemoteException {
+        this.clientFenster.setVisible(false);
+    }
+    
+    public void spielFensterOeffnen() throws RemoteException {
+        SpielFenster spielFenster = new SpielFenster(this.client, this.server);
+        spielFenster.setVisible(true);
+        spielFenster.setExtendedState(spielFenster.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     }
 
 }

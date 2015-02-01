@@ -36,11 +36,6 @@ public interface IServer extends Remote {
     public void listenChecken() throws RemoteException;
     public ArrayList<Card> getKartendeck() throws RemoteException;
     public Card entferneKarteAusDeck(int index) throws RemoteException;
-    
-    /**
-     *
-     * @param nextLine
-     * @throws RemoteException
-     */
     public void broadcastMessage(String message) throws RemoteException;
+    public int getTopCardID() throws RemoteException;
 }

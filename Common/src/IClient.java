@@ -23,4 +23,6 @@ public interface IClient extends Remote {
     public boolean getSpielerAmZug() throws RemoteException;
     public void setSpielerAmZugTrue() throws RemoteException;
     public void setSpielerAmZugFalse() throws RemoteException;
+    public void clientFensterAusblenden() throws RemoteException;
+    public void spielFensterOeffnen() throws RemoteException;
 }

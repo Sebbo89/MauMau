@@ -53,7 +53,6 @@ public class ServerImpl implements IServer, Serializable {
         //serverfenster.jPanelHinzufuegen(benutzername);
     } 
     
-    @Override
     public void spielStarten(ArrayList<IClient> readyliste) throws RemoteException {
         kartendeck = Card.kartendeckErzeugen();
         // Karte als topCard deklarieren und aus Deck entfernen
@@ -61,6 +60,12 @@ public class ServerImpl implements IServer, Serializable {
         this.entferneKarteAusDeck(0);
         
         this.kartenAnSpielerVerteilen(readyliste);
+        
+        // Chatfenster bei Clients ausblenden und Spielfenster öffnen
+        for (int i = 0; i < readyListe.size(); i++) {
+            readyListe.get(i).clientFensterAusblenden();
+            readyliste.get(i).spielFensterOeffnen();
+        }
         
         System.out.println(topCard.getFarbe() + " - " + topCard.getWert() + " - " + topCard.getID());
     }
@@ -131,6 +136,11 @@ public class ServerImpl implements IServer, Serializable {
     @Override
     public Card entferneKarteAusDeck(int index){ 
         return getKartendeck().remove(index);
+    }
+    
+    @Override
+    public int getTopCardID() {
+        return topCard.getID();
     }
     
 }
