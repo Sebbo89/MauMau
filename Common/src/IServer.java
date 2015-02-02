@@ -38,4 +38,5 @@ public interface IServer extends Remote {
     public Card entferneKarteAusDeck(int index) throws RemoteException;
     public void broadcastMessage(String message) throws RemoteException;
     public int getTopCardID() throws RemoteException;
+    public int anzahlReadyListeAusgeben() throws RemoteException;
 }

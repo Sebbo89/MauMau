@@ -36,6 +36,12 @@ public class ClientImpl implements IClient, Serializable {
 		this.benutzername = benutzername;
                 this.server = server;
                 this.server.clientAnmelden(this.benutzername, registerClient());
+                
+                // Nicknamefenster erstellen, um Nickname einzugeben
+                
+                NicknameFenster nicknameFenster = new NicknameFenster(this.client);
+                nicknameFenster.setVisible(true);
+                nicknameFenster.setAlwaysOnTop(true);
 	}       
         
         int playerIndex;
@@ -139,6 +145,11 @@ public class ClientImpl implements IClient, Serializable {
         SpielFenster spielFenster = new SpielFenster(this.client, this.server);
         spielFenster.setVisible(true);
         spielFenster.setExtendedState(spielFenster.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+    }
+
+    @Override
+    public void setBenutzername(String text) {
+        this.benutzername = text;
     }
 
 }

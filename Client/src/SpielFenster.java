@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -32,11 +33,64 @@ public class SpielFenster extends javax.swing.JFrame {
     
     public SpielFenster(IClient client, IServer server) throws RemoteException {
         initComponents();
+        
+        // ID von TopCard holen und als Icon setzen
         int dummy = server.getTopCardID();
-        URL resource1 = SpielFenster.class.getResource( "img/" + dummy + ".png" );
-        //URL resource1 = SpielFenster.class.getResource( "/img/" + Integer.toString(server.getTopCardID()) + ".png" );
-        Icon topCardIcon = new ImageIcon(resource1);
+        
+        // 1. Image einlesen, String mit dummy-Zahl zusammensetzen. Dummy stellt ID der Karte da und Bild kann
+        // kann somit zugeordnet werden
+        BufferedImage topImg = null;
+        try {
+            URL topCardResource = SpielFenster.class.getResource( "img/" + dummy + ".png");
+            topImg = ImageIO.read(new File(topCardResource.getPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        // 2. Image neu skalieren
+        Image topImgSkaliert = topImg.getScaledInstance(jLabel2.getWidth(), jLabel2.getHeight(),
+        Image.SCALE_SMOOTH);
+        
+        // 3. Image zuweisen an jLabel 2
+        Icon topCardIcon = new ImageIcon(topImgSkaliert);
         jLabel2.setIcon(topCardIcon);
+        
+        // selbes für Hintergrund tun
+        
+        // 1. Image einlesen
+        BufferedImage img = null;
+        try {
+            URL backResource = SpielFenster.class.getResource( "img/back.png");
+            img = ImageIO.read(new File(backResource.getPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        // 2. Image neu skalieren
+        Image dimg = img.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(),
+        Image.SCALE_SMOOTH);
+        
+        // 3. Image zuweisen an jLabel1
+        Icon backIcon = new ImageIcon(dimg);
+        jLabel1.setIcon(backIcon);
+        
+        
+        
+        // Fenster abhängig von Spieleranzahl zeichnen
+        switch (server.anzahlReadyListeAusgeben()) {
+            // 2 Spieler
+            case 2: {
+                break;
+            }
+            // 3 Spieler
+            case 3: {
+                break;
+            }
+            // 4 Spieler
+            case 4: {
+                break;
+            }
+        }
     }
     
     /**
@@ -50,6 +104,10 @@ public class SpielFenster extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -58,25 +116,49 @@ public class SpielFenster extends javax.swing.JFrame {
         setTitle("Miau Miau v.0.0.1");
         setAlwaysOnTop(true);
 
+        jPanel1.setToolTipText("");
+
+        jLabel2.setToolTipText("Topkarte");
+
+        jLabel1.setToolTipText("Kartenstapel");
+
+        jTextField1.setText("jTextField1");
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane1.setViewportView(jTextArea1);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 430, Short.MAX_VALUE)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jLabel2)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jTextField1))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addGap(39, 39, 39)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(40, 40, 40))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 630, Short.MAX_VALUE)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jLabel2)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap(210, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(102, 102, 102)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -126,12 +208,17 @@ public class SpielFenster extends javax.swing.JFrame {
             }
         });
     }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }

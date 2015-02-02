@@ -143,4 +143,8 @@ public class ServerImpl implements IServer, Serializable {
         return topCard.getID();
     }
     
+    public int anzahlReadyListeAusgeben() {
+        return readyListe.size();
+    }
+    
 }
