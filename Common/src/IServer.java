@@ -39,4 +39,5 @@ public interface IServer extends Remote {
     public void broadcastMessage(String message) throws RemoteException;
     public int getTopCardID() throws RemoteException;
     public int anzahlReadyListeAusgeben() throws RemoteException;
+    public void spielerUeberspringen() throws RemoteException;
 }

@@ -152,5 +152,10 @@ public class ClientImpl implements IClient, Serializable {
         this.benutzername = text;
     }
 
+    @Override
+    public ArrayList<Card> getHand() throws RemoteException {
+        return this.hand;
+    }
+
 }
 

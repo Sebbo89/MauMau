@@ -26,4 +26,5 @@ public interface IClient extends Remote {
     public void clientFensterAusblenden() throws RemoteException;
     public void spielFensterOeffnen() throws RemoteException;
     public void setBenutzername(String text) throws RemoteException;
+    public ArrayList<Card> getHand() throws RemoteException;
 }
