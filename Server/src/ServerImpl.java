@@ -64,7 +64,10 @@ public class ServerImpl implements IServer, Serializable {
         this.kartenAnSpielerVerteilen(readyliste);
         
         // Zufälligen Spieler starten lassen, "Zufällige Zahl" mit Anzahl der Spieler multiplizieren
-        readyListe.get((int) (Math.random() * (readyListe.size()-1))).setSpielerAmZugTrue();
+        int spielerAmZugIndex = (int) (Math.random() * (readyListe.size()-1)); 
+        readyListe.get(spielerAmZugIndex).setSpielerAmZugTrue();
+        System.out.println(readyListe.get(spielerAmZugIndex).getBenutzername());
+        
         
         // Chatfenster bei Clients ausblenden und Spielfenster öffnen
         for (int i = 0; i < readyListe.size(); i++) {

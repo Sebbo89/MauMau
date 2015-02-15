@@ -23,7 +23,7 @@ import javax.swing.JLabel;
  * @author Sebastian
  */
 public class SpielFenster extends javax.swing.JFrame {
-
+    IClient client;
     IServer server;
     /**
      * Creates new form SpielFenster
@@ -33,6 +33,7 @@ public class SpielFenster extends javax.swing.JFrame {
     }
     
     public SpielFenster(IClient client, IServer server) throws RemoteException {
+        this.server = server;
         initComponents();
         
         // ID von TopCard holen und als Icon setzen
@@ -268,7 +269,7 @@ public class SpielFenster extends javax.swing.JFrame {
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         try {
             // TODO add your handling code here:
-            server.spielerUeberspringen();
+            this.server.spielerUeberspringen();
         } catch (RemoteException ex) {
             Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
         }
