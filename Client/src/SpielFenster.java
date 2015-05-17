@@ -1,11 +1,19 @@
 
 import java.awt.Image;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -25,6 +33,8 @@ import javax.swing.JLabel;
 public class SpielFenster extends javax.swing.JFrame {
     IClient client;
     IServer server;
+    int selectedCardID;
+    ArrayList<JLabel> JLabelListe = new ArrayList();
     /**
      * Creates new form SpielFenster
      */
@@ -33,6 +43,7 @@ public class SpielFenster extends javax.swing.JFrame {
     }
     
     public SpielFenster(IClient client, IServer server) throws RemoteException {
+        this.client = client;
         this.server = server;
         initComponents();
         
@@ -79,15 +90,23 @@ public class SpielFenster extends javax.swing.JFrame {
         // Hand des Spielers grafisch ausgeben
         
         
-        ArrayList<JLabel> JLabelListe = new ArrayList();
+        
         
         for (int i = 0; i < client.getHand().size(); i++) {
-            JLabelListe.add(new JLabel());
+            // ID von Karte holen und als Icon setzen
+            int cardID = client.getHand().get(i).getID();
+            String cardIDString = Integer.toString(cardID);
+            
+            JLabel tmpLabel = new JLabel();
+            tmpLabel.setName(cardIDString);
+            JLabelListe.add(tmpLabel);
             JLabelListe.get(i).setSize(jLabel1.getWidth(), jLabel1.getHeight());
             jPanel2.add(JLabelListe.get(i));
             
             // ID von Karte holen und als Icon setzen
-            int cardID = client.getHand().get(i).getID();
+            /*int cardID = client.getHand().get(i).getID();
+            String cardIDString = Integer.toString(cardID);*/
+            
 
             // 1. Image einlesen, String mit dummy-Zahl zusammensetzen. Dummy stellt ID der Karte da und Bild kann
             // kann somit zugeordnet werden
@@ -102,11 +121,46 @@ public class SpielFenster extends javax.swing.JFrame {
             // 2. Image neu skalieren
             Image cardImgSkaliert = cardImg.getScaledInstance(JLabelListe.get(i).getWidth(), JLabelListe.get(i).getHeight(),
             Image.SCALE_SMOOTH);
-
+            
             // 3. Image zuweisen an jLabel zuweisen
             Icon cardImgIcon = new ImageIcon(cardImgSkaliert);
             JLabelListe.get(i).setIcon(cardImgIcon);
-        }
+            // ID setzen, damit bei Click on verknüpft werden kann
+            //JLabelListe.get(i).setText(cardIDString);
+ 
+            
+            //MouseListener einfügen, der die selektierte Karte setzt
+            MouseAdapter adapt = new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) 
+                {
+                    JLabel card;
+                    try {
+                        card = (JLabel) e.getSource();
+                        
+                    } catch (Exception ex) {
+                        card = null;
+                    }
+                    
+                    //String path = "initial";
+                    if(card != null)
+                    {
+                        selectedCardID = Integer.parseInt(card.getName());
+                    }
+                         System.out.println(selectedCardID);
+                    
+                }
+};
+     
+            JLabelListe.get(i).addMouseListener(adapt);
+                    
+                        
+                   
+                    //System.out.println("Test");
+                //}
+            //}
+           // );
+            }
         
         // Fenster abhängig von Spieleranzahl zeichnen
         switch (server.anzahlReadyListeAusgeben()) {
@@ -160,6 +214,11 @@ public class SpielFenster extends javax.swing.JFrame {
         jLabel1.setToolTipText("Kartenstapel");
 
         jTextField1.setText("jTextField1");
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField1KeyReleased(evt);
+            }
+        });
 
         jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
@@ -261,9 +320,21 @@ public class SpielFenster extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        try {
+            if (client.getSpielerAmZug()) {
+                try {
+                    server.spieleKarte(selectedCardID);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                System.out.println("Du bist nicht am Zug!");
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
@@ -274,6 +345,21 @@ public class SpielFenster extends javax.swing.JFrame {
             Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton3MouseClicked
+
+    private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
+        if (evt.getKeyCode()==KeyEvent.VK_ENTER){
+                Date d1 = new Date();
+                SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss ");
+                String formattedDate = df.format(d1);
+                try {
+                    this.server.broadcastMessage("[" + formattedDate + "] " + this.client.getBenutzername() +": " +  jTextField1.getText());
+                } catch (RemoteException ex) {
+                    Logger.getLogger(ClientFenster.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                jTextArea1.setText(null);
+        }
+    }//GEN-LAST:event_jTextField1KeyReleased
 
     /**
      * @param args the command line arguments
@@ -327,4 +413,9 @@ public class SpielFenster extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
+    
+    void nachrichtInTextAreaEinfuegen(String message) {
+        this.jTextArea1.append(message);
+        jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1); 
+    }
 }

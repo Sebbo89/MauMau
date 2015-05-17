@@ -246,6 +246,6 @@ public class ClientFenster extends javax.swing.JFrame {
      */
     public void nachrichtInTextAreaEinfuegen(String message) throws RemoteException {
         this.jTextArea2.append(message);
-        jTextArea2.setCaretPosition(jTextArea2.getText().length() - 1);        
+        jTextArea2.setCaretPosition(jTextArea2.getText().length() - 1);
     }  
 } 

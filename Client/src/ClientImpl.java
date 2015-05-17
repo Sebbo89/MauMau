@@ -29,6 +29,7 @@ public class ClientImpl implements IClient, Serializable {
     private String benutzername;
     private boolean spielerBereit = false;
     private boolean spielerAmZug = false;
+    private SpielFenster spielFenster = null;
     
     private static int clientIndex = 0;
 	public ClientImpl(IServer server, String benutzername, ClientFenster clientFenster) throws Exception{
@@ -119,6 +120,7 @@ public class ClientImpl implements IClient, Serializable {
     public void nachrichtEmpfangen(String message) throws RemoteException {
         // Code
         clientFenster.nachrichtInTextAreaEinfuegen(message);
+        spielFenster.nachrichtInTextAreaEinfuegen(message);
     }
 
     public void handNehmen(int anzahlKarten) throws RemoteException {
@@ -142,7 +144,7 @@ public class ClientImpl implements IClient, Serializable {
     }
     
     public void spielFensterOeffnen() throws RemoteException {
-        SpielFenster spielFenster = new SpielFenster(this.client, this.server);
+        spielFenster = new SpielFenster(this.client, this.server);
         spielFenster.setVisible(true);
         spielFenster.setExtendedState(spielFenster.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     }
@@ -155,6 +157,23 @@ public class ClientImpl implements IClient, Serializable {
     @Override
     public ArrayList<Card> getHand() throws RemoteException {
         return this.hand;
+    }
+
+    @Override
+    public void spieleKarte(Card karte) throws RemoteException {
+        for (int i = 0; i < hand.size(); i++) {
+            if (karte.getID() == hand.get(i).getID()) {
+                hand.remove(i);
+                server.getKartendeck().add(karte);
+                this.server.setTopcard(karte);
+                
+                // Wenn nur noch 1 Karte auf Hand, dann Miau sagen
+                
+                if ( hand.size() < 2 ) {
+                    System.out.println("Miau!");
+                }
+            }
+        }
     }
 
 }

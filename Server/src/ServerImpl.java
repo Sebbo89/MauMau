@@ -184,5 +184,15 @@ public class ServerImpl implements IServer, Serializable {
             }
         }
     }
+
+    @Override
+    public void setTopcard(Card karte) throws RemoteException {
+        topCard = karte;
+    }
+
+    @Override
+    public void spieleKarte(int selectedCardID) throws RemoteException {
+        System.out.println(selectedCardID);
+    }
     
 }
