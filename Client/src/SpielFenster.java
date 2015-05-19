@@ -88,79 +88,7 @@ public class SpielFenster extends javax.swing.JFrame {
         jLabel1.setIcon(backIcon);
         
         // Hand des Spielers grafisch ausgeben
-        
-        
-        
-        
-        for (int i = 0; i < client.getHand().size(); i++) {
-            // ID von Karte holen und als Icon setzen
-            int cardID = client.getHand().get(i).getID();
-            String cardIDString = Integer.toString(cardID);
-            
-            JLabel tmpLabel = new JLabel();
-            tmpLabel.setName(cardIDString);
-            JLabelListe.add(tmpLabel);
-            JLabelListe.get(i).setSize(jLabel1.getWidth(), jLabel1.getHeight());
-            jPanel2.add(JLabelListe.get(i));
-            
-            // ID von Karte holen und als Icon setzen
-            /*int cardID = client.getHand().get(i).getID();
-            String cardIDString = Integer.toString(cardID);*/
-            
-
-            // 1. Image einlesen, String mit dummy-Zahl zusammensetzen. Dummy stellt ID der Karte da und Bild kann
-            // kann somit zugeordnet werden
-            BufferedImage cardImg = null;
-            try {
-                URL cardResource = SpielFenster.class.getResource( "img/" + cardID + ".png");
-                cardImg = ImageIO.read(new File(cardResource.getPath()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // 2. Image neu skalieren
-            Image cardImgSkaliert = cardImg.getScaledInstance(JLabelListe.get(i).getWidth(), JLabelListe.get(i).getHeight(),
-            Image.SCALE_SMOOTH);
-            
-            // 3. Image zuweisen an jLabel zuweisen
-            Icon cardImgIcon = new ImageIcon(cardImgSkaliert);
-            JLabelListe.get(i).setIcon(cardImgIcon);
-            // ID setzen, damit bei Click on verknüpft werden kann
-            //JLabelListe.get(i).setText(cardIDString);
- 
-            
-            //MouseListener einfügen, der die selektierte Karte setzt
-            MouseAdapter adapt = new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) 
-                {
-                    JLabel card;
-                    try {
-                        card = (JLabel) e.getSource();
-                        
-                    } catch (Exception ex) {
-                        card = null;
-                    }
-                    
-                    //String path = "initial";
-                    if(card != null)
-                    {
-                        selectedCardID = Integer.parseInt(card.getName());
-                    }
-                         System.out.println(selectedCardID);
-                    
-                }
-};
-     
-            JLabelListe.get(i).addMouseListener(adapt);
-                    
-                        
-                   
-                    //System.out.println("Test");
-                //}
-            //}
-           // );
-            }
+        spielerhandZeichnen();
         
         // Fenster abhängig von Spieleranzahl zeichnen
         switch (server.anzahlReadyListeAusgeben()) {
@@ -213,7 +141,13 @@ public class SpielFenster extends javax.swing.JFrame {
 
         jLabel1.setToolTipText("Kartenstapel");
 
-        jTextField1.setText("jTextField1");
+        jTextField1.setText("Miau! Miau! Das ist die Chateingabe!");
+        jTextField1.setToolTipText("");
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
         jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextField1KeyReleased(evt);
@@ -235,11 +169,21 @@ public class SpielFenster extends javax.swing.JFrame {
         });
 
         jButton2.setText("Karte ziehen");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Aussetzen");
         jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton3MouseClicked(evt);
+            }
+        });
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
             }
         });
 
@@ -330,7 +274,8 @@ public class SpielFenster extends javax.swing.JFrame {
                     Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
-                System.out.println("Du bist nicht am Zug!");
+                jTextArea1.append("Katzenmeister My Auz: Du bist nich am Zug! Deine Zeit wird noch kommen!");
+                //this.jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1);
             }
         } catch (RemoteException ex) {
             Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
@@ -357,9 +302,40 @@ public class SpielFenster extends javax.swing.JFrame {
                     Logger.getLogger(ClientFenster.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                jTextArea1.setText(null);
+                jTextField1.setText(null);
         }
     }//GEN-LAST:event_jTextField1KeyReleased
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try {
+            if (client.getSpielerAmZug()) {
+                // to do
+            } else {
+                jTextArea1.append("Katzenmeister My Auz: Du bist nich am Zug! Deine Zeit wird noch kommen!");
+                //this.jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1);
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        try {
+            // TODO add your handling code here:
+            if (client.getSpielerAmZug()) {
+                // to do junge
+            } else {
+                jTextArea1.append("Katzenmeister My Auz: Du bist nich einmal am Zug! Wie willst du dann Aussetzen?!");
+                //this.jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1);
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -416,6 +392,96 @@ public class SpielFenster extends javax.swing.JFrame {
     
     void nachrichtInTextAreaEinfuegen(String message) {
         this.jTextArea1.append(message);
-        jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1); 
+        this.jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1);
+    }
+
+    public void topCardIconAendern(int selectedCardID) {
+        // ID von TopCard holen und als Icon setzen
+                    int dummy = selectedCardID;
+
+                    // 1. Image einlesen, String mit dummy-Zahl zusammensetzen. Dummy stellt ID der Karte da und Bild kann
+                    // kann somit zugeordnet werden
+                    BufferedImage topImg = null;
+                    try {
+                        URL topCardResource = SpielFenster.class.getResource( "img/" + dummy + ".png");
+                        topImg = ImageIO.read(new File(topCardResource.getPath()));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    // 2. Image neu skalieren
+                    Image topImgSkaliert = topImg.getScaledInstance(jLabel2.getWidth(), jLabel2.getHeight(),
+                    Image.SCALE_SMOOTH);
+
+                    // 3. Image zuweisen an jLabel 2
+                    Icon topCardIcon = new ImageIcon(topImgSkaliert);
+                    jLabel2.setIcon(topCardIcon);
+    }
+
+    public void spielerhandZeichnen() throws RemoteException {
+        for (int i = 0; i < client.getHand().size(); i++) {
+            // ID von Karte holen und als Icon setzen
+            int cardID = client.getHand().get(i).getID();
+            String cardIDString = Integer.toString(cardID);
+            
+            JLabel tmpLabel = new JLabel();
+            tmpLabel.setName(cardIDString);
+            JLabelListe.add(tmpLabel);
+            JLabelListe.get(i).setSize(jLabel1.getWidth(), jLabel1.getHeight());
+            jPanel2.add(JLabelListe.get(i));
+            
+            // ID von Karte holen und als Icon setzen
+            /*int cardID = client.getHand().get(i).getID();
+            String cardIDString = Integer.toString(cardID);*/
+            
+
+            // 1. Image einlesen, String mit dummy-Zahl zusammensetzen. Dummy stellt ID der Karte da und Bild kann
+            // kann somit zugeordnet werden
+            BufferedImage cardImg = null;
+            try {
+                URL cardResource = SpielFenster.class.getResource( "img/" + cardID + ".png");
+                cardImg = ImageIO.read(new File(cardResource.getPath()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // 2. Image neu skalieren
+            Image cardImgSkaliert = cardImg.getScaledInstance(JLabelListe.get(i).getWidth(), JLabelListe.get(i).getHeight(),
+            Image.SCALE_SMOOTH);
+            
+            // 3. Image zuweisen an jLabel zuweisen
+            Icon cardImgIcon = new ImageIcon(cardImgSkaliert);
+            JLabelListe.get(i).setIcon(cardImgIcon);
+                        
+            //MouseListener einfügen, der die selektierte Karte setzt
+            MouseAdapter adapt = new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) 
+                {
+                    JLabel card;
+                    try {
+                        card = (JLabel) e.getSource();
+                        
+                    } catch (Exception ex) {
+                        card = null;
+                    }
+                    
+                    //String path = "initial";
+                    if(card != null)
+                    {
+                        selectedCardID = Integer.parseInt(card.getName());
+                    }
+                         System.out.println(selectedCardID);
+                    
+                }
+            };
+     
+            JLabelListe.get(i).addMouseListener(adapt);
+                    
+            }
+    }
+
+    void jPanelLoeschen() {
+        jPanel2.removeAll();
     }
 }

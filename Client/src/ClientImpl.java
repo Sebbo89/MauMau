@@ -30,6 +30,7 @@ public class ClientImpl implements IClient, Serializable {
     private boolean spielerBereit = false;
     private boolean spielerAmZug = false;
     private SpielFenster spielFenster = null;
+    private boolean spielGewonnen = false;
     
     private static int clientIndex = 0;
 	public ClientImpl(IServer server, String benutzername, ClientFenster clientFenster) throws Exception{
@@ -120,7 +121,9 @@ public class ClientImpl implements IClient, Serializable {
     public void nachrichtEmpfangen(String message) throws RemoteException {
         // Code
         clientFenster.nachrichtInTextAreaEinfuegen(message);
-        spielFenster.nachrichtInTextAreaEinfuegen(message);
+        if (spielFenster != null) {
+            spielFenster.nachrichtInTextAreaEinfuegen(message);
+        }
     }
 
     public void handNehmen(int anzahlKarten) throws RemoteException {
@@ -158,23 +161,14 @@ public class ClientImpl implements IClient, Serializable {
     public ArrayList<Card> getHand() throws RemoteException {
         return this.hand;
     }
-
-    @Override
-    public void spieleKarte(Card karte) throws RemoteException {
-        for (int i = 0; i < hand.size(); i++) {
-            if (karte.getID() == hand.get(i).getID()) {
-                hand.remove(i);
-                server.getKartendeck().add(karte);
-                this.server.setTopcard(karte);
-                
-                // Wenn nur noch 1 Karte auf Hand, dann Miau sagen
-                
-                if ( hand.size() < 2 ) {
-                    System.out.println("Miau!");
-                }
-            }
-        }
+    
+    public void spielFensterAktualisieren(int selectedCardID) throws RemoteException {
+        this.spielFenster.jPanelLoeschen();
+        this.spielFenster.spielerhandZeichnen();
+        this.spielFenster.topCardIconAendern(selectedCardID);
+        this.spielFenster.revalidate();
+        
+        
     }
-
 }
 

@@ -66,15 +66,14 @@ public class ServerImpl implements IServer, Serializable {
         // Zufälligen Spieler starten lassen, "Zufällige Zahl" mit Anzahl der Spieler multiplizieren
         int spielerAmZugIndex = (int) (Math.random() * (readyListe.size()-1)); 
         readyListe.get(spielerAmZugIndex).setSpielerAmZugTrue();
-        System.out.println(readyListe.get(spielerAmZugIndex).getBenutzername());
-        
         
         // Chatfenster bei Clients ausblenden und Spielfenster öffnen
         for (int i = 0; i < readyListe.size(); i++) {
             readyListe.get(i).clientFensterAusblenden();
             readyliste.get(i).spielFensterOeffnen();
+            readyListe.get(i).nachrichtEmpfangen(readyListe.get(spielerAmZugIndex).getBenutzername() + " beginnt das Spiel! Viel Erfolg allen Kätzinnen und Katern!");
         }
-        
+                
         System.out.println(topCard.getFarbe() + " - " + topCard.getWert() + " - " + topCard.getID());
     }
     
@@ -131,10 +130,20 @@ public class ServerImpl implements IServer, Serializable {
     }
 
     public void broadcastMessage(String message) throws RemoteException {
-        System.out.println(message);
-        for(int i = 0; i<spielerliste.size(); i++) {
+        //System.out.println(message);
+        
+        if (spielerliste != null) {
+            for(int i = 0; i < spielerliste.size(); i++) {
             spielerliste.get(i).nachrichtEmpfangen(message);
+            }
         }
+        
+        if (readyListe != null) {
+            for(int i = 0; i < readyListe.size(); i++) {
+            readyListe.get(i).nachrichtEmpfangen(message);
+            }
+        }
+        
     }
     
     public ArrayList<Card> getKartendeck() {
@@ -189,10 +198,63 @@ public class ServerImpl implements IServer, Serializable {
     public void setTopcard(Card karte) throws RemoteException {
         topCard = karte;
     }
+    
+    
 
     @Override
     public void spieleKarte(int selectedCardID) throws RemoteException {
-        System.out.println(selectedCardID);
+        
+        IClient aktiverSpieler = getAktivenSpieler();
+        ArrayList<Card> tmpHand = aktiverSpieler.getHand();
+        
+        // wenn Karte, ein Bube ist, dann lege ohne weitere Prüfung ab
+        if ( selectedCardID == 4 || selectedCardID == 12 || selectedCardID == 20 || selectedCardID == 28) {
+            // Hand des aktiven Spielers durchgehen und Karte auf Stapel legen
+            for (int i = 0; i < tmpHand.size(); i++) {
+                if (tmpHand.get(i).getID() == selectedCardID) {
+                    getKartendeck().add(topCard);
+                    setTopcard(getAktivenSpieler().getHand().get(i));
+                }
+            }
+        }
+        // test, deswegen nur prüfen, ob ungleich 0, da das immer geht
+        else if (selectedCardID != 0 )
+            for (int i = 0; i < tmpHand.size(); i++) {
+                if (tmpHand.get(i).getID() == selectedCardID) {
+                    getKartendeck().add(topCard);
+                    setTopcard(tmpHand.get(i));
+                    tmpHand.remove(tmpHand.get(i));
+                }
+            }
+        // Spielerfenster nach Zug aktualisieren
+        for (int i = 0; i < readyListe.size(); i++) {
+            readyListe.get(i).spielFensterAktualisieren(selectedCardID);
+        }
+        System.out.println(selectedCardID + " wurde gespielt.");
     }
+
+    @Override
+    public String getTopCardWert() throws RemoteException {
+        return topCard.getWert();
+    }
+
+    @Override
+    public String getTopCardFarbe() throws RemoteException {
+       return topCard.getFarbe();
+    }
+
     
+    // aktiven Spieler zurückgeben
+    private IClient getAktivenSpieler() throws RemoteException {
+        IClient aktivenSpieler = null;
+        for (int i = 0; i < readyListe.size(); i++) {
+            if (readyListe.get(i).getSpielerAmZug()) {
+                aktivenSpieler = readyListe.get(i);
+                break;
+            } else {
+                aktivenSpieler = null;
+            }
+        }
+        return aktivenSpieler;
+    }    
 }
