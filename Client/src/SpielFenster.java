@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -33,7 +34,7 @@ import javax.swing.JLabel;
 public class SpielFenster extends javax.swing.JFrame {
     IClient client;
     IServer server;
-    int selectedCardID;
+    int selectedCardID = -4711;
     ArrayList<JLabel> JLabelListe = new ArrayList();
     /**
      * Creates new form SpielFenster
@@ -133,7 +134,6 @@ public class SpielFenster extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Miau Miau v.0.0.1");
-        setAlwaysOnTop(true);
 
         jPanel1.setToolTipText("");
 
@@ -269,12 +269,22 @@ public class SpielFenster extends javax.swing.JFrame {
         try {
             if (client.getSpielerAmZug()) {
                 try {
-                    server.spieleKarte(selectedCardID);
+                    if (selectedCardID >= 0) {
+                        server.spieleKarte(selectedCardID);
+                        if (selectedCardID == 2 || selectedCardID == 10 || selectedCardID == 18 || selectedCardID == 26) {
+                            popupZeigen("Du hast eine Acht gespielt! Du darfst noch einmal :-))");
+                        }
+                        if (client.getHand().size() == 1) {
+                            popupZeigen("Du hast nur noch eine Karte! Miau!");
+                        }
+                    } else {
+                        jTextArea1.append("\n" + "Katzenmeister My Auz: Bitte wähle zuerste eine Karte aus! Miauz genau!");
+                    }
                 } catch (RemoteException ex) {
                     Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
-                jTextArea1.append("Katzenmeister My Auz: Du bist nich am Zug! Deine Zeit wird noch kommen!");
+                jTextArea1.append("\n" + "Katzenmeister My Auz: Du bist nich am Zug! Deine Zeit wird noch kommen!");
                 //this.jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1);
             }
         } catch (RemoteException ex) {
@@ -285,7 +295,7 @@ public class SpielFenster extends javax.swing.JFrame {
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         try {
             // TODO add your handling code here:
-            this.server.spielerUeberspringen();
+            this.server.spielerWechseln();
         } catch (RemoteException ex) {
             Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -297,7 +307,7 @@ public class SpielFenster extends javax.swing.JFrame {
                 SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss ");
                 String formattedDate = df.format(d1);
                 try {
-                    this.server.broadcastMessage("[" + formattedDate + "] " + this.client.getBenutzername() +": " +  jTextField1.getText());
+                    this.server.broadcastMessage( "\n" + "[" + formattedDate + "] " + this.client.getBenutzername() +": " +  jTextField1.getText());
                 } catch (RemoteException ex) {
                     Logger.getLogger(ClientFenster.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -309,9 +319,20 @@ public class SpielFenster extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
             if (client.getSpielerAmZug()) {
-                // to do
+                // Eine Karte ziehen, falls noch nicht geschehen.
+                if (client.getZiehenCounter() == 0) {
+                    client.karteZiehen(1);
+                    client.setZiehenCounter(1);
+                    jPanelLoeschen();
+                    spielerhandZeichnen();
+                    revalidate();
+                    
+                } else {
+                    popupZeigen("Du hast bereits eine Karte gezogen! Spiele eine Karte oder setze aus!");
+                }
             } else {
-                jTextArea1.append("Katzenmeister My Auz: Du bist nich am Zug! Deine Zeit wird noch kommen!");
+                popupZeigen("Katzenmeister My Auz: Du bist nich am Zug! Deine Zeit wird noch kommen!");
+                jTextArea1.append("\n" + "Katzenmeister My Auz: Du bist nich am Zug! Deine Zeit wird noch kommen!");
                 //this.jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1);
             }
         } catch (RemoteException ex) {
@@ -326,12 +347,20 @@ public class SpielFenster extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {
             // TODO add your handling code here:
-            if (client.getSpielerAmZug()) {
-                // to do junge
-            } else {
-                jTextArea1.append("Katzenmeister My Auz: Du bist nich einmal am Zug! Wie willst du dann Aussetzen?!");
-                //this.jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1);
-            }
+            
+                if (client.getSpielerAmZug()) {
+                    if (client.getZiehenCounter() != 0) {
+                        client.setZiehenCounter(0);
+                        server.spielerWechseln();
+                    } else {
+                        popupZeigen("Ziehe zunächst eine Karte, bevor du aussetzt!");
+                    }
+                    
+                } else {
+                    popupZeigen("Katzenmeister My Auz: Du bist nich einmal am Zug! Wie willst du dann Aussetzen?!");
+                    jTextArea1.append("\n" + "Katzenmeister My Auz: Du bist nich einmal am Zug! Wie willst du dann Aussetzen?!");
+                    //this.jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1);
+                }
         } catch (RemoteException ex) {
             Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -419,6 +448,8 @@ public class SpielFenster extends javax.swing.JFrame {
     }
 
     public void spielerhandZeichnen() throws RemoteException {
+        ArrayList<Card> tmpHand = client.getHand();
+        JLabelListe.clear();
         for (int i = 0; i < client.getHand().size(); i++) {
             // ID von Karte holen und als Icon setzen
             int cardID = client.getHand().get(i).getID();
@@ -483,5 +514,11 @@ public class SpielFenster extends javax.swing.JFrame {
 
     void jPanelLoeschen() {
         jPanel2.removeAll();
+        jPanel2.validate();
+        jPanel2.repaint();
+    }
+
+    void popupZeigen(String message) {
+        JOptionPane.showMessageDialog(null, message);
     }
 }

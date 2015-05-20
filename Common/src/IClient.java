@@ -28,4 +28,10 @@ public interface IClient extends Remote {
     public void setBenutzername(String text) throws RemoteException;
     public ArrayList<Card> getHand() throws RemoteException;
     public void spielFensterAktualisieren(int selectedCardID) throws RemoteException;
+    public void karteGrafischEntfernen(int selectedCardID) throws RemoteException;
+    public String getRegistryKey() throws RemoteException;
+    public void individuellesPopupZeigen(String message) throws RemoteException;
+    public void karteZiehen(int anzahl) throws RemoteException;
+    public int getZiehenCounter() throws RemoteException;
+    public void setZiehenCounter(int zustand) throws RemoteException;
 }

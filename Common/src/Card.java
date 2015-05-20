@@ -18,10 +18,12 @@ public class Card implements Serializable{
     private int kartenID ;
     private static ArrayList<Card> kartendeck = new ArrayList();
     private enum Farbe {
-        HERZ, KARO, PIK, KREUZ
+        //HERZ, KARO, PIK, KREUZ
+        Herz, Karo, Pik, Kreuz
     }
     private enum Wert {
-        SIEBEN, ACHT, NEUN, BUBE, DAME, KOENIG, ZEHN, ASS
+        //SIEBEN, ACHT, NEUN, BUBE, DAME, KOENIG, ZEHN, ASS
+        Sieben, Acht, Neun, Bube, Dame, König, Zehn, Ass
     }
     
     public Card(String farbe, String wert, int counter) {
@@ -45,7 +47,9 @@ public class Card implements Serializable{
     
     public static ArrayList kartendeckMischen(ArrayList<Card> kartendeck) {
         // Liste mischen
-        Collections.shuffle(kartendeck);
+        for (int i = 0; i < 3; i++) {
+            Collections.shuffle(kartendeck);
+        }
         return kartendeck;
     }
     

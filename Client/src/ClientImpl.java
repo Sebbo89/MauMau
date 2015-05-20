@@ -31,6 +31,8 @@ public class ClientImpl implements IClient, Serializable {
     private boolean spielerAmZug = false;
     private SpielFenster spielFenster = null;
     private boolean spielGewonnen = false;
+    private String registryKey;
+    private int ziehenCounter = 0;
     
     private static int clientIndex = 0;
 	public ClientImpl(IServer server, String benutzername, ClientFenster clientFenster) throws Exception{
@@ -47,12 +49,31 @@ public class ClientImpl implements IClient, Serializable {
 	}       
         
         int playerIndex;
+        
+        private void refreshRegistry() throws RemoteException{
+            
+            //Search in all registry keys
+            //last clientXX +1
+            
+            
+            client = (IClient) UnicastRemoteObject.exportObject( this, 0 );
+            Registry registry = LocateRegistry.getRegistry();
+            //int index = 0;
+            
+            registry.rebind(registryKey, client );
+            
+            
+            
+            
+        }
+        
         private String registerClient() throws RemoteException{
             
             //Search in all registry keys
             //last clientXX +1
             
             String key = "Client" + clientIndex++;
+            this.registryKey = key;
             client = (IClient) UnicastRemoteObject.exportObject( this, 0 );
             Registry registry = LocateRegistry.getRegistry();
             int index = 0;
@@ -116,7 +137,9 @@ public class ClientImpl implements IClient, Serializable {
      * @param message
      * @throws RemoteException
      */
-    
+    public void individuellesPopupZeigen(String message) throws RemoteException {
+        spielFenster.popupZeigen(message);
+    }
     
     public void nachrichtEmpfangen(String message) throws RemoteException {
         // Code
@@ -162,13 +185,65 @@ public class ClientImpl implements IClient, Serializable {
         return this.hand;
     }
     
+    public void karteGrafischEntfernen(int selectedCardID) throws RemoteException {
+        // ID in String umwandeln
+        String tmpString= Integer.toString(selectedCardID);
+        
+        for (int i = 0; i < this.spielFenster.JLabelListe.size(); i++) {
+            
+            // Überprüfen, ob String auf der Hand vorkommt und dann die Karte aus der ArrayList entfernen
+            if (this.spielFenster.JLabelListe.get(i).getName().equals(tmpString)) {
+                this.spielFenster.JLabelListe.remove(this.spielFenster.JLabelListe.get(i));
+                
+                
+                for (int j=0; j < this.getHand().size(); j++) {
+                    String tmpId = this.getHand().get(j).getID() + "";
+                    if (tmpString.equals(tmpId)) {
+                        this.getHand().remove(j);
+                        //ArrayList<Card> tmpHand = client.getHand();
+                        //this.geth
+                        //Object t = null;
+                    }
+                }
+            }
+        }
+        //refreshRegistry();
+        ArrayList<Card> tmpHand = client.getHand();
+    }
+    
     public void spielFensterAktualisieren(int selectedCardID) throws RemoteException {
         this.spielFenster.jPanelLoeschen();
-        this.spielFenster.spielerhandZeichnen();
         this.spielFenster.topCardIconAendern(selectedCardID);
-        this.spielFenster.revalidate();
-        
-        
+        this.spielFenster.spielerhandZeichnen();
+        this.spielFenster.revalidate();   
     }
+    
+    public String getRegistryKey() throws RemoteException {
+        return registryKey;
+    }
+
+    @Override
+    public void karteZiehen(int anzahl) throws RemoteException {
+        for (int i = 0; i < anzahl; i++) {
+            // Letzte Karte vom Kartendeck zwischenspeichern und der Hand hinzufügen
+            Card tmpCard = server.getKartendeck().get(server.getKartendeck().size()-1);
+            this.getHand().add(tmpCard);
+            // Karte aus Deck entfernen
+            server.getKartendeck().remove(server.getKartendeck().size()-1);
+            // Kartendeck mischen
+            Card.kartendeckMischen(server.getKartendeck());
+        }
+    }
+
+    @Override
+    public int getZiehenCounter() throws RemoteException {
+        return ziehenCounter;
+    }
+
+    @Override
+    public void setZiehenCounter(int zustand) throws RemoteException {
+        this.ziehenCounter = zustand;
+    }
+
 }
 
