@@ -1,4 +1,5 @@
 
+import com.sun.java.accessibility.util.TopLevelWindowMulticaster;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -224,14 +225,15 @@ public class ClientImpl implements IClient, Serializable {
 
     @Override
     public void karteZiehen(int anzahl) throws RemoteException {
+        ArrayList<Card> tmpKartendeck = server.getKartendeck();
         for (int i = 0; i < anzahl; i++) {
             // Letzte Karte vom Kartendeck zwischenspeichern und der Hand hinzufügen
-            Card tmpCard = server.getKartendeck().get(server.getKartendeck().size()-1);
+            Card tmpCard = tmpKartendeck.get(tmpKartendeck.size()-1);
             this.getHand().add(tmpCard);
             // Karte aus Deck entfernen
-            server.getKartendeck().remove(server.getKartendeck().size()-1);
+            tmpKartendeck.remove(tmpKartendeck.get(tmpKartendeck.size()-1));
             // Kartendeck mischen
-            Card.kartendeckMischen(server.getKartendeck());
+            Card.kartendeckMischen(tmpKartendeck);
         }
     }
 
@@ -243,6 +245,25 @@ public class ClientImpl implements IClient, Serializable {
     @Override
     public void setZiehenCounter(int zustand) throws RemoteException {
         this.ziehenCounter = zustand;
+    }
+
+    @Override
+    public void siebenerAbfragen() throws RemoteException {
+        boolean siebenerAufHand = false;
+        for (int i = 0; i < this.getHand().size(); i++) {
+            if (this.getHand().get(i).getWert().equals("Sieben")) {
+                siebenerAufHand = true;
+                break;
+            }
+        }
+        // wenn kein Siebener auf der Hand, Karten ziehen
+        if (!siebenerAufHand) {
+            this.karteZiehen(server.getSiebenerCounter());
+            this.server.setSiebenerCounter(0);
+            this.spielFensterAktualisieren(server.getTopCardID());
+        } else {
+            this.spielFenster.siebenerAbfragen();
+        }
     }
 
 }

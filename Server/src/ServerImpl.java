@@ -24,8 +24,10 @@ public class ServerImpl implements IServer, Serializable {
     public static ArrayList<IClient> spielerliste = new ArrayList();
     public static ArrayList<IClient> readyListe = new ArrayList();
     private ArrayList benutzernamen = new ArrayList();
+    private IClient aktiverSpieler;
+    private IClient naechsterSpieler;
     private ServerFenster serverfenster;
-    private int anzahlKarten = 7;
+    private int anzahlKarten = 5;
     private static ArrayList<Card> kartendeck;
     private Card topCard = null;
     private int zugCounter = 1;
@@ -77,7 +79,12 @@ public class ServerImpl implements IServer, Serializable {
         }
                 
         System.out.println(topCard.getFarbe() + " - " + topCard.getWert() + " - " + topCard.getID());
+        
+        // Spielbeginn
+        aktiverSpieler = getAktivenSpieler();
+        naechsterSpieler = getNaechstenSpieler();
     }
+    
     
     @Override
     public void spielerlisteAnzahlAusgeben() throws RemoteException {
@@ -168,20 +175,10 @@ public class ServerImpl implements IServer, Serializable {
 
     @Override
     public void spielerWechseln() throws RemoteException {
-        for (int i = 0; i < readyListe.size(); i++) {
-            // Prüfen, ob Spieler am Zug ist
-            if (readyListe.get(i).getSpielerAmZug()) {
-                if ( i == readyListe.size()-1) {
-                    readyListe.get(i).setSpielerAmZugFalse();
-                    readyListe.get(0).setSpielerAmZugTrue();
-                    break;
-                } else {
-                    readyListe.get(i).setSpielerAmZugFalse();
-                    readyListe.get(i+1).setSpielerAmZugTrue();
-                    break;
-                }
-            }
-        }
+        IClient tmpClient = aktiverSpieler;
+        aktiverSpieler = getNaechstenSpieler();
+        aktiverSpieler.setSpielerAmZugTrue();
+        tmpClient.setSpielerAmZugFalse();
     }
 
     @Override
@@ -193,29 +190,48 @@ public class ServerImpl implements IServer, Serializable {
 
     @Override
     public void spieleKarte(int selectedCardID) throws RemoteException {
+        aktiverSpieler = getAktivenSpieler();
         
-        IClient aktiverSpieler = getAktivenSpieler();
         ArrayList<Card> tmpHand = aktiverSpieler.getHand();
         String tmpKarteWert = null;
         String tmpKarteFarbe = null; 
         
         
-        // Aktion, falls 7 zu Spielbeginn liegt
-        if (topCard.getWert().equals("Sieben") && zugCounter==1) {
-            siebenerCounter = siebenerCounter+2;
-            for (int i = 0; i < aktiverSpieler.getHand().size(); i++) {
-                if (aktiverSpieler.getHand().get(i).getWert().equals("Sieben")) {
-                    // Wenn 7 auf der Hand, sicherstellen, dass diese gespielt wird
-                } else {
-                    aktiverSpieler.karteZiehen(siebenerCounter);
-                    aktiverSpieler.spielFensterAktualisieren(topCard.getID());
-                    siebenerCounter = 0;
+        
+        // Ablauf, falls 7 abgelegt wird
+        if (selectedCardID == 1 || selectedCardID == 9 || selectedCardID == 17 || selectedCardID == 25  ) {
+             for (int i = 0; i < tmpHand.size(); i++) {
+                
+                tmpKarteFarbe = tmpHand.get(i).getFarbe();
+                tmpKarteWert = tmpHand.get(i).getWert();
+                
+                if (tmpHand.get(i).getID() == selectedCardID) {
+                    getKartendeck().add(topCard);
+                    // Kartendeck wieder mischen
+                    kartendeck = Card.kartendeckMischen(kartendeck);
+                    setTopcard(tmpHand.get(i));
+                    tmpHand.remove(tmpHand.get(i));
+                    aktiverSpieler.setZiehenCounter(0);
+                    miauMiauPruefen(aktiverSpieler);
+                    spielerWechseln();
+                    zugCounter++;
+                    broadcastMessage("\n" + tmpKarteFarbe + " - " + tmpKarteWert + " wurde gespielt.");
+                    // Spielerfenster nach Zug aktualisieren
+                    for (int j = 0; j < readyListe.size(); j++) {
+                        readyListe.get(j).karteGrafischEntfernen(selectedCardID);
+                        readyListe.get(j).spielFensterAktualisieren(selectedCardID);
+                    }
+                    
+                    // naechstenSpieler bezüglich der Sieben abfragen
+                    
+                    
+                    break;
                 }
             }
-        }
+         }
         
         // wenn Karte, ein Bube ist, dann lege ohne weitere Prüfung ab oder wenn TopCard Bube und Runde 1 ist
-        if ((selectedCardID == 4 || selectedCardID == 12 || selectedCardID == 20 || selectedCardID == 28) || (zugCounter == 1 && topCard.getWert().equals("Bube"))) {
+        else if ((selectedCardID == 4 || selectedCardID == 12 || selectedCardID == 20 || selectedCardID == 28) || (zugCounter == 1 && topCard.getWert().equals("Bube"))) {
             // Hand des aktiven Spielers durchgehen und Karte auf Stapel legen
             for (int i = 0; i < tmpHand.size(); i++) {
                 
@@ -229,6 +245,7 @@ public class ServerImpl implements IServer, Serializable {
                     setTopcard(tmpHand.get(i));
                     tmpHand.remove(tmpHand.get(i));
                     aktiverSpieler.setZiehenCounter(0);
+                    miauMiauPruefen(aktiverSpieler);
                     spielerWechseln();
                     zugCounter++;
                     
@@ -242,8 +259,9 @@ public class ServerImpl implements IServer, Serializable {
                 }
             }
         }
-        // Rest abdecken, entweder muss Wert oder Farbe gleich sein
-        else if (selectedCardID != 4 || selectedCardID != 12 || selectedCardID != 20 || selectedCardID != 28  ) {
+        // Falls gewählte Karte kein Bube oder 7, dann folgenden Ablauf ausführen
+        else if (selectedCardID != 4 && selectedCardID != 12 && selectedCardID != 20 && selectedCardID != 28 
+                && selectedCardID != 1 && selectedCardID != 9 && selectedCardID != 17 && selectedCardID != 25  ) {
           
             for (int i = 0; i < tmpHand.size(); i++) {
                 tmpKarteFarbe = tmpHand.get(i).getFarbe();
@@ -258,12 +276,14 @@ public class ServerImpl implements IServer, Serializable {
                     // Falls Karte keine 8 ist, dann Spieler wechseln, ansonsten nicht!
                     if (!tmpHand.get(i).getWert().equals("Acht")) {
                         aktiverSpieler.setZiehenCounter(0);
+                        miauMiauPruefen(aktiverSpieler);
                         spielerWechseln();
                     } else {
-                        //aktiverSpieler.individuellesPopupZeigen("Du hast eine Acht abgelegt! Du darfst nochmal!");
+                        aktiverSpieler.individuellesPopupZeigen("Du hast eine 8 gelegt! Du darfst nochmal :-)");
                     }
                     // Karte aus Hand entfernen
                     tmpHand.remove(tmpHand.get(i));
+                    
                     // ZugCounter erhöhen
                     zugCounter++;
                     
@@ -278,12 +298,8 @@ public class ServerImpl implements IServer, Serializable {
                 else if (i == tmpHand.size()-1) {
                     aktiverSpieler.nachrichtEmpfangen("\n" +"Katzenmeister My Auz: Diese Karte darf nicht gespielt werden! Versuch eine andere!");
                 }
-                
-                //Überprüfen, ob nur noch eine Hand vorhanden
-                if (aktiverSpieler.getHand().size() == 1) {
-                    broadcastMessage(aktiverSpieler.getBenutzername() + " hat nur noch eine Karte auf der Hand! Miau! Jetzt aber Vollgas!");
-                }
-            } 
+                   
+            }
         }
     }
 
@@ -311,4 +327,43 @@ public class ServerImpl implements IServer, Serializable {
         }
         return aktivenSpieler;
     }    
+
+    @Override
+    public int getSiebenerCounter() throws RemoteException {
+        return siebenerCounter;
+    }
+
+    @Override
+    public IClient getNaechstenSpieler() throws RemoteException {
+        IClient tmpClient = null;
+        for (int i = 0; i < readyListe.size(); i++) {
+            if ( readyListe.get(i).getSpielerAmZug() && i == (readyListe.size()-1) ) {
+                tmpClient = readyListe.get(0);
+            } 
+            else if ( readyListe.get(i).getSpielerAmZug() && i < (readyListe.size()-1) ) {
+                tmpClient = readyListe.get(i+1);
+            }
+        }
+        return tmpClient;
+    }
+
+    @Override
+    public void setSiebenerCounter(int i) throws RemoteException {
+        this.siebenerCounter = i;
+    }
+
+    @Override
+    public void miauMiauPruefen(IClient client) throws RemoteException {
+        // Überprüfen, ob nur noch eine Hand vorhanden, 2 und 1 gewählt, da die Prüfung durchgeführt wird, bevor die Karte abgelegt wird!
+                if (client.getHand().size() == 2) {
+                    broadcastMessage("\n" + client.getBenutzername() + " hat nur noch eine Karte auf der Hand! Miau! Jetzt aber Vollgas!");
+                }
+                
+                // Spiel vorbei??
+                if (client.getHand().size() == 1) {
+                    for (int j = 0; j < readyListe.size(); j++) {
+                        client.individuellesPopupZeigen("Miau! Miau! Du hast gewonnen :-) Glückwunsch");
+                    }
+                }
+    }
 }

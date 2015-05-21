@@ -34,4 +34,5 @@ public interface IClient extends Remote {
     public void karteZiehen(int anzahl) throws RemoteException;
     public int getZiehenCounter() throws RemoteException;
     public void setZiehenCounter(int zustand) throws RemoteException;
+    public void siebenerAbfragen() throws RemoteException;
 }

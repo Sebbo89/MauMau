@@ -21,6 +21,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -271,20 +272,19 @@ public class SpielFenster extends javax.swing.JFrame {
                 try {
                     if (selectedCardID >= 0) {
                         server.spieleKarte(selectedCardID);
-                        if (selectedCardID == 2 || selectedCardID == 10 || selectedCardID == 18 || selectedCardID == 26) {
-                            popupZeigen("Du hast eine Acht gespielt! Du darfst noch einmal :-))");
-                        }
                         if (client.getHand().size() == 1) {
                             popupZeigen("Du hast nur noch eine Karte! Miau!");
                         }
                     } else {
+                        popupZeigen("Katzenmeister My Auz: Du bist nicht am Zug! Deine Zeit wird noch kommen!");
                         jTextArea1.append("\n" + "Katzenmeister My Auz: Bitte wähle zuerste eine Karte aus! Miauz genau!");
                     }
                 } catch (RemoteException ex) {
                     Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
-                jTextArea1.append("\n" + "Katzenmeister My Auz: Du bist nich am Zug! Deine Zeit wird noch kommen!");
+                popupZeigen("Katzenmeister My Auz: Du bist nicht am Zug! Deine Zeit wird noch kommen!");
+                jTextArea1.append("\n" + "Katzenmeister My Auz: Du bist nicht am Zug! Deine Zeit wird noch kommen!");
                 //this.jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1);
             }
         } catch (RemoteException ex) {
@@ -352,6 +352,7 @@ public class SpielFenster extends javax.swing.JFrame {
                     if (client.getZiehenCounter() != 0) {
                         client.setZiehenCounter(0);
                         server.spielerWechseln();
+                        popupZeigen("Du setzt eine Runde aus!");
                     } else {
                         popupZeigen("Ziehe zunächst eine Karte, bevor du aussetzt!");
                     }
@@ -518,7 +519,33 @@ public class SpielFenster extends javax.swing.JFrame {
         jPanel2.repaint();
     }
 
-    void popupZeigen(String message) {
-        JOptionPane.showMessageDialog(null, message);
+    void popupZeigen(final String message) {
+        Runnable doPopupZeigen = new Runnable() {
+            @Override
+            public void run() {
+                JOptionPane.showMessageDialog(rootPane, message);
+            }
+        };
+        
+        SwingUtilities.invokeLater(doPopupZeigen);
+        
     }
+
+    void siebenerAbfragen() throws RemoteException {
+        ArrayList<Card> tmpHand = client.getHand();
+        
+        //ImageIcon icon = new ImageIcon("bild.jpg");
+        int antwort = JOptionPane.showConfirmDialog(rootPane, "Du hast eine 7 auf der Hand! Möchtest du sie spielen?", "Meldung", JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE); //icon); 
+        
+        if (antwort == JOptionPane.OK_OPTION) {
+            System.out.println("Alles ok!");
+        } else if (antwort == JOptionPane.NO_OPTION) {
+            client.karteZiehen(server.getSiebenerCounter());
+            server.setSiebenerCounter(0);
+            this.jPanelLoeschen();
+            this.spielerhandZeichnen();
+            server.broadcastMessage("\n" + client.getBenutzername() + " hat " + server.getSiebenerCounter() + " Karten aufgenommen!");       
+        }
+    } 
 }
