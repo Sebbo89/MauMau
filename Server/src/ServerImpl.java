@@ -1,4 +1,5 @@
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -8,6 +9,11 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
@@ -239,6 +245,7 @@ public class ServerImpl implements IServer, Serializable {
                     break;
                 } else {
                     aktiverSpieler.nachrichtEmpfangen("\n" +"Katzenmeister My Auz: Diese Karte darf nicht gespielt werden! Versuch eine andere!");
+                    break;
                 }
             }
          }
@@ -419,14 +426,19 @@ public class ServerImpl implements IServer, Serializable {
                 
                 // Spiel vorbei??
                 if (client.getHand().size() == 1) {
+                    try {
                         client.siegerPopupAnzeigen("Miau! Miau! Du hast gewonnen :-) Glückwunsch");
                         client.setGewonnen(true);
-                    for (int j = 0; j < readyListe.size(); j++) {
-                        if (!readyListe.get(j).getGewonnen()) {
-                            readyListe.get(j).verlierPopupAnzeigen("Take it easy =)");
+                        for (int j = 0; j < readyListe.size(); j++) {
+                            if (!readyListe.get(j).getGewonnen()) {
+                                readyListe.get(j).verlierPopupAnzeigen("Take it easy =)");
+                            }
                         }
-                    }
-                    broadcastMessage("\n" + client.getBenutzername() + " hat alle Karten abgelegt! Wir haben einen neuen Katzenmeister! Meeeow!");
+                        broadcastMessage("\n" + client.getBenutzername() + " hat alle Karten abgelegt! Wir haben einen neuen Katzenmeister! Meeeow!");
+                    } catch (IOException ex) {
+                        Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    
+                }
                 }
     }
 

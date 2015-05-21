@@ -232,10 +232,10 @@ public class ClientImpl implements IClient, Serializable {
         ArrayList<Card> tmpKartendeck = server.getKartendeck();
         for (int i = 0; i < anzahl; i++) {
             // Letzte Karte vom Kartendeck zwischenspeichern und der Hand hinzufügen
-            Card tmpCard = tmpKartendeck.get(tmpKartendeck.size()-1);
+            Card tmpCard = tmpKartendeck.get((tmpKartendeck.size()-1));
             this.getHand().add(tmpCard);
             // Karte aus Deck entfernen
-            tmpKartendeck.remove(tmpKartendeck.get(tmpKartendeck.size()-1));
+            server.entferneKarteAusDeck((tmpKartendeck.size()-1));
             // Kartendeck mischen
             Card.kartendeckMischen(server.getKartendeck());
         }

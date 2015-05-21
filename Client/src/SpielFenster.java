@@ -20,6 +20,11 @@ import java.util.logging.Logger;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -498,13 +503,18 @@ public class SpielFenster extends javax.swing.JFrame {
                     {
                         selectedCardID = Integer.parseInt(card.getName());
                         
-                        /*//Ändere Rahmen aller Karten
+                        //Ändere Rahmen aller Karten
                         for (JLabel otherLabel : JLabelListe) {
-                            otherLabel.setBackground(null);
+                            otherLabel.setBorder(null);
                         }
                         
                         //Ändere Rahmen der aktiven Karte
-                        card.setb (Color.RED);*/
+                        Border compound = null;
+                        Border redline = BorderFactory.createLineBorder(Color.BLUE, 3, true);
+                        compound = BorderFactory.createCompoundBorder(
+                          redline, compound);
+                        card.setBorder(compound);
+                        
                     }
                          System.out.println(selectedCardID);
                     
@@ -539,40 +549,32 @@ public class SpielFenster extends javax.swing.JFrame {
         Runnable doPopupZeigen = new Runnable() {
             @Override
             public void run() {
-                    final JFrame siegerFenster = new JFrame();
-                    JPanel panel = new JPanel();
-                    siegerFenster.add(panel);
-                    JLabel tmpLabel = new JLabel();
-                    tmpLabel.setSize(400, 267);
-                    BufferedImage cardImg = null;
-                    try {
-                        URL cardResource = SpielFenster.class.getResource( "img/url.gif");
-                        cardImg = ImageIO.read(new File(cardResource.getPath()));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                final JFrame siegerFenster = new JFrame();
+                JPanel panel = new JPanel();
+                siegerFenster.add(panel);
+                JLabel tmpLabel = new JLabel();
+                tmpLabel.setSize(400, 267);
+                BufferedImage cardImg = null;
+                try {
+                    URL cardResource = SpielFenster.class.getResource( "img/url.gif");
+                    cardImg = ImageIO.read(new File(cardResource.getPath()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Image cardImgSkaliert = cardImg.getScaledInstance(tmpLabel.getWidth(), tmpLabel.getHeight(),
+                        Image.SCALE_SMOOTH);
+                Icon cardImgIcon = new ImageIcon(cardImgSkaliert);
+                tmpLabel.setIcon(cardImgIcon);
+                panel.add(tmpLabel);
+                siegerFenster.pack();
+                siegerFenster.setLocationRelativeTo(null);
+                siegerFenster.setTitle("Du bist der neue Katzenmeister!");
+                siegerFenster.setVisible(true);
 
-                    // 2. Image neu skalieren
-                    Image cardImgSkaliert = cardImg.getScaledInstance(tmpLabel.getWidth(), tmpLabel.getHeight(),
-                    Image.SCALE_SMOOTH);
-
-                    // 3. Image zuweisen an jLabel zuweisen
-                    Icon cardImgIcon = new ImageIcon(cardImgSkaliert);
-                    tmpLabel.setIcon(cardImgIcon);
-                    
-                    // Label in Panel einfügen
-                    panel.add(tmpLabel);
-                    
-                    // Jetzt sind Karten erstellt, jetzt das JFrame packen und dann erst anzeigen
-                    siegerFenster.pack();
-                    siegerFenster.setLocationRelativeTo(null);
-                    siegerFenster.setTitle("Du bist der neue Katzenmeister!");
-                    siegerFenster.setVisible(true);
-
-                    
-            }
+                
+                
+            };
         };
-        
         SwingUtilities.invokeLater(doPopupZeigen);
         
     }
@@ -585,7 +587,7 @@ public class SpielFenster extends javax.swing.JFrame {
                 JOptionPane.QUESTION_MESSAGE); //icon); 
         
         if (antwort == JOptionPane.OK_OPTION) {
-            System.out.println("Alles ok!");
+            //to do, wenn 7 gespielt werden soll
         } else if (antwort == JOptionPane.NO_OPTION) {
             client.karteZiehen(server.getSiebenerCounter());
             int tmpCounter = server.getSiebenerCounter();
