@@ -31,8 +31,11 @@ public interface IClient extends Remote {
     public void karteGrafischEntfernen(int selectedCardID) throws RemoteException;
     public String getRegistryKey() throws RemoteException;
     public void individuellesPopupZeigen(String message) throws RemoteException;
+    public void individuellesPopupZeigen2(String message) throws RemoteException;
     public void karteZiehen(int anzahl) throws RemoteException;
     public int getZiehenCounter() throws RemoteException;
     public void setZiehenCounter(int zustand) throws RemoteException;
     public void siebenerAbfragen() throws RemoteException;
+    public void nachFarbeFragen() throws RemoteException;
+
 }

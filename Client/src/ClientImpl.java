@@ -142,6 +142,10 @@ public class ClientImpl implements IClient, Serializable {
         spielFenster.popupZeigen(message);
     }
     
+    public void individuellesPopupZeigen2(String message) throws RemoteException {
+        spielFenster.popupZeigen2(message);
+    }
+    
     public void nachrichtEmpfangen(String message) throws RemoteException {
         // Code
         clientFenster.nachrichtInTextAreaEinfuegen(message);
@@ -261,9 +265,15 @@ public class ClientImpl implements IClient, Serializable {
             this.karteZiehen(server.getSiebenerCounter());
             this.server.setSiebenerCounter(0);
             this.spielFensterAktualisieren(server.getTopCardID());
+            this.individuellesPopupZeigen("Eine 7 wurde gelegt und du hast keine auf der Hand! Miauz! Zieh 2 Karten!");
         } else {
             this.spielFenster.siebenerAbfragen();
         }
+    }
+
+    @Override
+    public void nachFarbeFragen() throws RemoteException {
+        this.spielFenster.nachFarbeFragen();
     }
 
 }

@@ -83,6 +83,13 @@ public class ServerImpl implements IServer, Serializable {
         // Spielbeginn
         aktiverSpieler = getAktivenSpieler();
         naechsterSpieler = getNaechstenSpieler();
+        
+        // falls zu Spielbeginn 7 liegt
+        
+        if (topCard.getWert().equals("Sieben")) {
+            setSiebenerCounter(siebenerCounter+2);
+            aktiverSpieler.siebenerAbfragen();
+        }
     }
     
     
@@ -223,7 +230,8 @@ public class ServerImpl implements IServer, Serializable {
                     }
                     
                     // naechstenSpieler bezüglich der Sieben abfragen
-                    
+                    setSiebenerCounter(siebenerCounter+2);
+                    aktiverSpieler.siebenerAbfragen();
                     
                     break;
                 }
@@ -255,6 +263,9 @@ public class ServerImpl implements IServer, Serializable {
                         readyListe.get(j).karteGrafischEntfernen(selectedCardID);
                         readyListe.get(j).spielFensterAktualisieren(selectedCardID);
                     }
+                    
+                    aktiverSpieler.nachFarbeFragen();
+                    
                     break;
                 }
             }
@@ -362,8 +373,9 @@ public class ServerImpl implements IServer, Serializable {
                 // Spiel vorbei??
                 if (client.getHand().size() == 1) {
                     for (int j = 0; j < readyListe.size(); j++) {
-                        client.individuellesPopupZeigen("Miau! Miau! Du hast gewonnen :-) Glückwunsch");
+                        client.individuellesPopupZeigen2("Miau! Miau! Du hast gewonnen :-) Glückwunsch");
                     }
+                    broadcastMessage("\n" + client.getBenutzername() + " hat alle Karten abgelegt! Wir haben einen neuen Katzenmeister! Meeeow!");
                 }
     }
 }

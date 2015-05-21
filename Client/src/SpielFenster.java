@@ -530,6 +530,18 @@ public class SpielFenster extends javax.swing.JFrame {
         SwingUtilities.invokeLater(doPopupZeigen);
         
     }
+    
+    void popupZeigen2(final String message) {
+        Runnable doPopupZeigen = new Runnable() {
+            @Override
+            public void run() {
+                    JOptionPane.showMessageDialog(rootPane, message);
+            }
+        };
+        
+        SwingUtilities.invokeLater(doPopupZeigen);
+        
+    }
 
     void siebenerAbfragen() throws RemoteException {
         ArrayList<Card> tmpHand = client.getHand();
@@ -542,10 +554,15 @@ public class SpielFenster extends javax.swing.JFrame {
             System.out.println("Alles ok!");
         } else if (antwort == JOptionPane.NO_OPTION) {
             client.karteZiehen(server.getSiebenerCounter());
+            int tmpCounter = server.getSiebenerCounter();
             server.setSiebenerCounter(0);
             this.jPanelLoeschen();
             this.spielerhandZeichnen();
-            server.broadcastMessage("\n" + client.getBenutzername() + " hat " + server.getSiebenerCounter() + " Karten aufgenommen!");       
+            server.broadcastMessage("\n" + client.getBenutzername() + " hat " + tmpCounter + " Karten aufgenommen!");       
         }
     } 
+
+    void nachFarbeFragen() {
+        
+    }
 }
