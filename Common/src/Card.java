@@ -17,6 +17,12 @@ public class Card implements Serializable{
     private String wert = null;
     private int kartenID ;
     private static ArrayList<Card> kartendeck = new ArrayList();
+
+    void setTopcardID(int i) {
+        this.kartenID = i;
+    }
+
+    
     private enum Farbe {
         //HERZ, KARO, PIK, KREUZ
         Herz, Karo, Pik, Kreuz
@@ -69,5 +75,9 @@ public class Card implements Serializable{
     
     public int getID() {
         return this.kartenID;
+    }
+    
+    public void setFarbe(String farbe) {
+        this.farbe = farbe;
     }
 }

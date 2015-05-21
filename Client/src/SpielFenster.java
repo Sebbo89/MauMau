@@ -1,4 +1,5 @@
 
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -16,7 +17,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -25,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 import org.omg.CORBA.INTERNAL;
 
 /*
@@ -130,8 +135,8 @@ public class SpielFenster extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
         buttonPanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        karteSpielenButton = new javax.swing.JButton();
+        karteZiehenButton = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -166,26 +171,21 @@ public class SpielFenster extends javax.swing.JFrame {
 
         jPanel2.setLayout(new java.awt.GridLayout(1, 0));
 
-        jButton1.setText("Karte spielen");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        karteSpielenButton.setText("Karte spielen");
+        karteSpielenButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                karteSpielenButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Karte ziehen");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        karteZiehenButton.setText("Karte ziehen");
+        karteZiehenButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                karteZiehenButtonActionPerformed(evt);
             }
         });
 
         jButton3.setText("Aussetzen");
-        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton3MouseClicked(evt);
-            }
-        });
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -199,8 +199,8 @@ public class SpielFenster extends javax.swing.JFrame {
             .addGroup(buttonPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(buttonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(karteSpielenButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(karteZiehenButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -208,9 +208,9 @@ public class SpielFenster extends javax.swing.JFrame {
             buttonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(buttonPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1)
+                .addComponent(karteSpielenButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
+                .addComponent(karteZiehenButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -270,7 +270,7 @@ public class SpielFenster extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void karteSpielenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_karteSpielenButtonActionPerformed
         try {
             if (client.getSpielerAmZug()) {
                 try {
@@ -294,16 +294,7 @@ public class SpielFenster extends javax.swing.JFrame {
         } catch (RemoteException ex) {
             Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
-        try {
-            // TODO add your handling code here:
-            this.server.spielerWechseln();
-        } catch (RemoteException ex) {
-            Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_jButton3MouseClicked
+    }//GEN-LAST:event_karteSpielenButtonActionPerformed
 
     private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
         if (evt.getKeyCode()==KeyEvent.VK_ENTER){
@@ -320,7 +311,7 @@ public class SpielFenster extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jTextField1KeyReleased
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void karteZiehenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_karteZiehenButtonActionPerformed
         try {
             if (client.getSpielerAmZug()) {
                 // Eine Karte ziehen, falls noch nicht geschehen.
@@ -342,7 +333,7 @@ public class SpielFenster extends javax.swing.JFrame {
         } catch (RemoteException ex) {
             Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_karteZiehenButtonActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
@@ -351,9 +342,9 @@ public class SpielFenster extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {
             // TODO add your handling code here:
-            
+                int tmpCounter = client.getZiehenCounter();
                 if (client.getSpielerAmZug()) {
-                    if (client.getZiehenCounter() != 0) {
+                    if (tmpCounter != 0) {
                         client.setZiehenCounter(0);
                         server.spielerWechseln();
                         popupZeigen("Du setzt eine Runde aus!");
@@ -409,8 +400,6 @@ public class SpielFenster extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel buttonPanel;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -422,6 +411,8 @@ public class SpielFenster extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JButton karteSpielenButton;
+    private javax.swing.JButton karteZiehenButton;
     // End of variables declaration//GEN-END:variables
     
     void nachrichtInTextAreaEinfuegen(String message) {
@@ -506,8 +497,17 @@ public class SpielFenster extends javax.swing.JFrame {
                     if(card != null)
                     {
                         selectedCardID = Integer.parseInt(card.getName());
+                        
+                        /*//Ändere Rahmen aller Karten
+                        for (JLabel otherLabel : JLabelListe) {
+                            otherLabel.setBackground(null);
+                        }
+                        
+                        //Ändere Rahmen der aktiven Karte
+                        card.setb (Color.RED);*/
                     }
                          System.out.println(selectedCardID);
+                    
                     
                 }
             };
@@ -539,7 +539,37 @@ public class SpielFenster extends javax.swing.JFrame {
         Runnable doPopupZeigen = new Runnable() {
             @Override
             public void run() {
-                    JOptionPane.showMessageDialog(rootPane, message);
+                    final JFrame siegerFenster = new JFrame();
+                    JPanel panel = new JPanel();
+                    siegerFenster.add(panel);
+                    JLabel tmpLabel = new JLabel();
+                    tmpLabel.setSize(400, 267);
+                    BufferedImage cardImg = null;
+                    try {
+                        URL cardResource = SpielFenster.class.getResource( "img/url.gif");
+                        cardImg = ImageIO.read(new File(cardResource.getPath()));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    // 2. Image neu skalieren
+                    Image cardImgSkaliert = cardImg.getScaledInstance(tmpLabel.getWidth(), tmpLabel.getHeight(),
+                    Image.SCALE_SMOOTH);
+
+                    // 3. Image zuweisen an jLabel zuweisen
+                    Icon cardImgIcon = new ImageIcon(cardImgSkaliert);
+                    tmpLabel.setIcon(cardImgIcon);
+                    
+                    // Label in Panel einfügen
+                    panel.add(tmpLabel);
+                    
+                    // Jetzt sind Karten erstellt, jetzt das JFrame packen und dann erst anzeigen
+                    siegerFenster.pack();
+                    siegerFenster.setLocationRelativeTo(null);
+                    siegerFenster.setTitle("Du bist der neue Katzenmeister!");
+                    siegerFenster.setVisible(true);
+
+                    
             }
         };
         
@@ -631,24 +661,36 @@ public class SpielFenster extends javax.swing.JFrame {
                         switch (gewaehlteFarbe) {
                             case "Herz": {
                                 server.alleSpielerFensterAktualisieren(90);
+                                server.swapTopcardWithDummy();
+                                server.setTopcardFarbe("Herz");
+                                server.setTopcardID(90);
                                 // Fenster zernichten!!!!!!
                                 frageFenster.dispose();
                                 break;
                             }
                             case "Karo": {
                                 server.alleSpielerFensterAktualisieren(91);
+                                server.swapTopcardWithDummy();
+                                server.setTopcardFarbe("Karo");
+                                server.setTopcardID(91);
                                 // Fenster zernichten!!!!!!
                                 frageFenster.dispose();
                                 break;
                             }
                             case "Kreuz": {
                                 server.alleSpielerFensterAktualisieren(92);
+                                server.swapTopcardWithDummy();
+                                server.setTopcardFarbe("Kreuz");
+                                server.setTopcardID(92);
                                 // Fenster zernichten!!!!!!
                                 frageFenster.dispose();
                                 break;
                             }
                             case "Pik": {
                                 server.alleSpielerFensterAktualisieren(93);
+                                server.swapTopcardWithDummy();
+                                server.setTopcardFarbe("Pik");
+                                server.setTopcardID(93);
                                 // Fenster zernichten!!!!!!
                                 frageFenster.dispose();
                                 break;
@@ -669,5 +711,46 @@ public class SpielFenster extends javax.swing.JFrame {
         frageFenster.setLocationRelativeTo(null);
         frageFenster.setTitle("Wähle eine Farbe!");
         frageFenster.setVisible(true);
+    }
+
+    void verliererPopupAnzeigen() {
+        Runnable doPopupZeigen2 = new Runnable() {
+            @Override
+            public void run() {
+                    final JFrame verliererFenster = new JFrame();
+                    JPanel panel = new JPanel();
+                    verliererFenster.add(panel);
+                    JLabel tmpLabel = new JLabel();
+                    tmpLabel.setSize(400, 267);
+                    BufferedImage cardImg = null;
+                    try {
+                        URL cardResource = SpielFenster.class.getResource( "img/ohoh.jpg");
+                        cardImg = ImageIO.read(new File(cardResource.getPath()));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    // 2. Image neu skalieren
+                    Image cardImgSkaliert = cardImg.getScaledInstance(tmpLabel.getWidth(), tmpLabel.getHeight(),
+                    Image.SCALE_SMOOTH);
+
+                    // 3. Image zuweisen an jLabel zuweisen
+                    Icon cardImgIcon = new ImageIcon(cardImgSkaliert);
+                    tmpLabel.setIcon(cardImgIcon);
+                    
+                    // Label in Panel einfügen
+                    panel.add(tmpLabel);
+                    
+                    // Jetzt sind Karten erstellt, jetzt das JFrame packen und dann erst anzeigen
+                    verliererFenster.pack();
+                    verliererFenster.setLocationRelativeTo(null);
+                    verliererFenster.setTitle("Take it easy =) !");
+                    verliererFenster.setVisible(true);
+
+                    
+            }
+        };
+        
+        SwingUtilities.invokeLater(doPopupZeigen2);
     }
 }

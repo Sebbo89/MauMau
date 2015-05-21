@@ -31,7 +31,7 @@ public class ClientImpl implements IClient, Serializable {
     private boolean spielerBereit = false;
     private boolean spielerAmZug = false;
     private SpielFenster spielFenster = null;
-    private boolean spielGewonnen = false;
+    private boolean gewonnen = false;
     private String registryKey;
     private int ziehenCounter = 0;
     
@@ -40,7 +40,7 @@ public class ClientImpl implements IClient, Serializable {
                 this.clientFenster = clientFenster;
 		this.benutzername = benutzername;
                 this.server = server;
-                this.server.clientAnmelden(this.benutzername, registerClient());
+                this.server.clientAnmelden(this.benutzername, registerClient(server.getSpielerKey()));
                 
                 // Nicknamefenster erstellen, um Nickname einzugeben
                 
@@ -68,22 +68,22 @@ public class ClientImpl implements IClient, Serializable {
             
         }
         
-        private String registerClient() throws RemoteException{
+        private String registerClient(String key) throws RemoteException{
             
             //Search in all registry keys
             //last clientXX +1
             
-            String key = "Client" + clientIndex++;
+            //String key = "Client" + clientIndex++;
             this.registryKey = key;
             client = (IClient) UnicastRemoteObject.exportObject( this, 0 );
             Registry registry = LocateRegistry.getRegistry();
-            int index = 0;
+            //int index = 0;
             
             registry.rebind(key, client );
             
             
             
-            return key;
+           return key;
         }
         
         public IServer getServer() throws RemoteException {
@@ -142,8 +142,8 @@ public class ClientImpl implements IClient, Serializable {
         spielFenster.popupZeigen(message);
     }
     
-    public void individuellesPopupZeigen2(String message) throws RemoteException {
-        spielFenster.popupZeigen2(message);
+    public void siegerPopupAnzeigen(String message) throws RemoteException {
+        this.spielFenster.popupZeigen2(message);
     }
     
     public void nachrichtEmpfangen(String message) throws RemoteException {
@@ -237,7 +237,7 @@ public class ClientImpl implements IClient, Serializable {
             // Karte aus Deck entfernen
             tmpKartendeck.remove(tmpKartendeck.get(tmpKartendeck.size()-1));
             // Kartendeck mischen
-            Card.kartendeckMischen(tmpKartendeck);
+            Card.kartendeckMischen(server.getKartendeck());
         }
     }
 
@@ -274,6 +274,21 @@ public class ClientImpl implements IClient, Serializable {
     @Override
     public void nachFarbeFragen() throws RemoteException {
         this.spielFenster.nachFarbeFragen();
+    }
+
+    @Override
+    public void setGewonnen(boolean status) throws RemoteException {
+        this.gewonnen = status;
+    }
+
+    @Override
+    public boolean getGewonnen() throws RemoteException {
+        return this.gewonnen;
+    }
+
+    @Override
+    public void verlierPopupAnzeigen(String message) throws RemoteException {
+        this.spielFenster.verliererPopupAnzeigen();
     }
 
 }

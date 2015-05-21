@@ -23,6 +23,7 @@ import javax.swing.JTextArea;
 public class ServerImpl implements IServer, Serializable {
     public static ArrayList<IClient> spielerliste = new ArrayList();
     public static ArrayList<IClient> readyListe = new ArrayList();
+    private Card dummy = new Card("lila","trölf", 4711);
     private ArrayList benutzernamen = new ArrayList();
     private IClient aktiverSpieler;
     private IClient naechsterSpieler;
@@ -32,6 +33,7 @@ public class ServerImpl implements IServer, Serializable {
     private Card topCard = null;
     private int zugCounter = 1;
     private int siebenerCounter = 0;
+    private static int spielerIndex = 0;
     /*
     public ServerImpl(ServerFenster serverFenster) {
         this.serverfenster = serverFenster;
@@ -82,7 +84,6 @@ public class ServerImpl implements IServer, Serializable {
         
         // Spielbeginn
         aktiverSpieler = getAktivenSpieler();
-        naechsterSpieler = getNaechstenSpieler();
         
         // falls zu Spielbeginn 7 liegt
         
@@ -182,10 +183,12 @@ public class ServerImpl implements IServer, Serializable {
 
     @Override
     public void spielerWechseln() throws RemoteException {
-        IClient tmpClient = aktiverSpieler;
-        aktiverSpieler = getNaechstenSpieler();
-        aktiverSpieler.setSpielerAmZugTrue();
-        tmpClient.setSpielerAmZugFalse();
+        naechsterSpieler = getNaechstenSpieler();
+        aktiverSpieler.setSpielerAmZugFalse();
+        //aktiverSpieler = getNaechstenSpieler();
+        naechsterSpieler.setSpielerAmZugTrue();
+        aktiverSpieler = naechsterSpieler;
+       
     }
 
     @Override
@@ -198,7 +201,7 @@ public class ServerImpl implements IServer, Serializable {
     @Override
     public void spieleKarte(int selectedCardID) throws RemoteException {
         aktiverSpieler = getAktivenSpieler();
-        
+        boolean farbeGewaehlt = false;
         ArrayList<Card> tmpHand = aktiverSpieler.getHand();
         String tmpKarteWert = null;
         String tmpKarteFarbe = null; 
@@ -212,7 +215,7 @@ public class ServerImpl implements IServer, Serializable {
                 tmpKarteFarbe = tmpHand.get(i).getFarbe();
                 tmpKarteWert = tmpHand.get(i).getWert();
                 
-                if (tmpHand.get(i).getID() == selectedCardID) {
+                if (tmpHand.get(i).getID() == selectedCardID && topCard.getFarbe().equals(tmpHand.get(i).getFarbe())) {
                     getKartendeck().add(topCard);
                     // Kartendeck wieder mischen
                     kartendeck = Card.kartendeckMischen(kartendeck);
@@ -234,27 +237,27 @@ public class ServerImpl implements IServer, Serializable {
                     aktiverSpieler.siebenerAbfragen();
                     
                     break;
+                } else {
+                    aktiverSpieler.nachrichtEmpfangen("\n" +"Katzenmeister My Auz: Diese Karte darf nicht gespielt werden! Versuch eine andere!");
                 }
             }
          }
         
-        // wenn Karte, ein Bube ist, dann lege ohne weitere Prüfung ab oder wenn TopCard Bube und Runde 1 ist
-        else if ((selectedCardID == 4 || selectedCardID == 12 || selectedCardID == 20 || selectedCardID == 28) || (zugCounter == 1 && topCard.getWert().equals("Bube"))) {
+        // Ablauf, falls Farbe gewünscht wurde
+        
+        else if ((topCard.getID() == 90 || topCard.getID() == 91 || topCard.getID() == 92 || topCard.getID() == 93)) {
+            farbeGewaehlt = true;
             // Hand des aktiven Spielers durchgehen und Karte auf Stapel legen
             for (int i = 0; i < tmpHand.size(); i++) {
                 
                 tmpKarteFarbe = tmpHand.get(i).getFarbe();
                 tmpKarteWert = tmpHand.get(i).getWert();
                 
-                if (tmpHand.get(i).getID() == selectedCardID) {
-                    getKartendeck().add(topCard);
-                    // Kartendeck wieder mischen
-                    kartendeck = Card.kartendeckMischen(kartendeck);
+                if (tmpKarteFarbe.equals(topCard.getFarbe()) && tmpHand.get(i).getID() == selectedCardID) {
                     setTopcard(tmpHand.get(i));
                     tmpHand.remove(tmpHand.get(i));
                     aktiverSpieler.setZiehenCounter(0);
                     miauMiauPruefen(aktiverSpieler);
-                    aktiverSpieler.nachFarbeFragen();
                     spielerWechseln();
                     zugCounter++;
                     
@@ -269,9 +272,53 @@ public class ServerImpl implements IServer, Serializable {
                 }
             }
         }
+        
+        // wenn Karte, ein Bube ist, dann lege ohne weitere Prüfung ab oder wenn TopCard Bube und Runde 1 ist
+        else if ((selectedCardID == 4 || selectedCardID == 12 || selectedCardID == 20 || selectedCardID == 28) || (zugCounter == 1 && topCard.getWert().equals("Bube"))
+                   && !farbeGewaehlt) {
+            
+
+            // Merken, ob bei erster Runde ein Bube liegt, dann später die Auswahl der Farbe nicht ausführen
+            boolean tmpReminder = (zugCounter == 1 && topCard.getWert().equals("Bube"));
+            
+            // Hand des aktiven Spielers durchgehen und Karte auf Stapel legen
+            for (int i = 0; i < tmpHand.size(); i++) {
+                
+                tmpKarteFarbe = tmpHand.get(i).getFarbe();
+                tmpKarteWert = tmpHand.get(i).getWert();
+                
+                if (tmpHand.get(i).getID() == selectedCardID) {
+                    getKartendeck().add(topCard);
+                    // Kartendeck wieder mischen
+                    kartendeck = Card.kartendeckMischen(kartendeck);
+                    setTopcard(tmpHand.get(i));
+                    tmpHand.remove(tmpHand.get(i));
+                    aktiverSpieler.setZiehenCounter(0);
+                    miauMiauPruefen(aktiverSpieler);
+                    // wenn Bube, aber nicht 1. Runde, dann Auswahl aktivieren
+                    if (!tmpReminder) {
+                        aktiverSpieler.nachFarbeFragen();
+                    }
+                    kartendeck.add(topCard);
+                    kartendeck = Card.kartendeckMischen(kartendeck);
+                    spielerWechseln();
+                    zugCounter++;
+                    
+                    
+                    broadcastMessage("\n" + tmpKarteFarbe + " - " + tmpKarteWert + " wurde gespielt.");
+                    // Spielerfenster nach Zug aktualisieren
+                    for (int j = 0; j < readyListe.size(); j++) {
+                        readyListe.get(j).karteGrafischEntfernen(selectedCardID);
+                        readyListe.get(j).spielFensterAktualisieren(selectedCardID);
+                    }
+                    
+                    break;
+                }
+            }
+        }
         // Falls gewählte Karte kein Bube oder 7, dann folgenden Ablauf ausführen
-        else if (selectedCardID != 4 && selectedCardID != 12 && selectedCardID != 20 && selectedCardID != 28 
-                && selectedCardID != 1 && selectedCardID != 9 && selectedCardID != 17 && selectedCardID != 25  ) {
+        else if ( (selectedCardID != 4 && selectedCardID != 12 && selectedCardID != 20 && selectedCardID != 28 
+                && selectedCardID != 1 && selectedCardID != 9 && selectedCardID != 17 && selectedCardID != 25 ) && !farbeGewaehlt ) {
           
             for (int i = 0; i < tmpHand.size(); i++) {
                 tmpKarteFarbe = tmpHand.get(i).getFarbe();
@@ -303,6 +350,7 @@ public class ServerImpl implements IServer, Serializable {
                         readyListe.get(j).karteGrafischEntfernen(selectedCardID);
                         readyListe.get(j).spielFensterAktualisieren(selectedCardID);
                     }
+                    
                     break;
                 } 
                 else if (i == tmpHand.size()-1) {
@@ -371,8 +419,12 @@ public class ServerImpl implements IServer, Serializable {
                 
                 // Spiel vorbei??
                 if (client.getHand().size() == 1) {
+                        client.siegerPopupAnzeigen("Miau! Miau! Du hast gewonnen :-) Glückwunsch");
+                        client.setGewonnen(true);
                     for (int j = 0; j < readyListe.size(); j++) {
-                        client.individuellesPopupZeigen2("Miau! Miau! Du hast gewonnen :-) Glückwunsch");
+                        if (!readyListe.get(j).getGewonnen()) {
+                            readyListe.get(j).verlierPopupAnzeigen("Take it easy =)");
+                        }
                     }
                     broadcastMessage("\n" + client.getBenutzername() + " hat alle Karten abgelegt! Wir haben einen neuen Katzenmeister! Meeeow!");
                 }
@@ -388,5 +440,25 @@ public class ServerImpl implements IServer, Serializable {
         for (int i = 0; i < readyListe.size(); i++) {
             readyListe.get(i).spielFensterAktualisieren(kartenid);
         }
+    }
+
+    @Override
+    public void setTopcardFarbe(String farbe) throws RemoteException {
+        topCard.setFarbe(farbe);
+    }
+
+    @Override
+    public void setTopcardID(int i) throws RemoteException {
+        topCard.setTopcardID(i);
+    }
+
+    @Override
+    public void swapTopcardWithDummy() throws RemoteException {
+        topCard = dummy;
+    }
+
+    @Override
+    public String getSpielerKey() throws RemoteException {
+        return "Client" + spielerIndex++;
     }
 }

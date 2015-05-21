@@ -50,4 +50,9 @@ public interface IServer extends Remote {
     public void miauMiauPruefen(IClient client) throws RemoteException;
     public void skipNaechstenSpieler() throws RemoteException;
     public void alleSpielerFensterAktualisieren(int kartenid) throws RemoteException;
+    public void setTopcardFarbe(String farbe) throws RemoteException;
+    public void setTopcardID(int i) throws RemoteException;
+    public void swapTopcardWithDummy() throws RemoteException;
+    public String getSpielerKey() throws RemoteException;
+
 }
