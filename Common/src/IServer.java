@@ -48,4 +48,6 @@ public interface IServer extends Remote {
     public IClient getNaechstenSpieler() throws RemoteException;
     public void setSiebenerCounter(int i) throws RemoteException;
     public void miauMiauPruefen(IClient client) throws RemoteException;
+    public void skipNaechstenSpieler() throws RemoteException;
+    public void alleSpielerFensterAktualisieren(int kartenid) throws RemoteException;
 }

@@ -17,11 +17,15 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import org.omg.CORBA.INTERNAL;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -563,6 +567,107 @@ public class SpielFenster extends javax.swing.JFrame {
     } 
 
     void nachFarbeFragen() {
+   
+        final JFrame frageFenster = new JFrame();
+        JPanel panel = new JPanel();
+        frageFenster.add(panel);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));      
         
+        for (int i = 90; i < 94; i++) {    
+            
+            // 1. Image einlesen, String mit i-Zahl zusammensetzen. i stellt ID der Karte da und Bild kann
+            // kann somit zugeordnet werden
+            final JLabel tmpLabel = new JLabel();
+            tmpLabel.setSize(140, 200);
+            
+            BufferedImage cardImg = null;
+            try {
+                URL cardResource = SpielFenster.class.getResource( "img/" + i + ".png");
+                cardImg = ImageIO.read(new File(cardResource.getPath()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // 2. Image neu skalieren
+            Image cardImgSkaliert = cardImg.getScaledInstance(tmpLabel.getWidth(), tmpLabel.getHeight(),
+            Image.SCALE_SMOOTH);
+            
+            // 3. Image zuweisen an jLabel zuweisen
+            Icon cardImgIcon = new ImageIcon(cardImgSkaliert);
+            tmpLabel.setIcon(cardImgIcon);
+            // Name des Labels setzen, um später Event abfangen zu können
+            switch (i) {
+                case 90: {
+                    tmpLabel.setName("Herz");
+                    tmpLabel.setToolTipText(tmpLabel.getName());
+                    break;
+                }
+                case 91: {
+                    tmpLabel.setName("Karo");
+                    tmpLabel.setToolTipText(tmpLabel.getName());
+                    break;
+                }
+                case 92: {
+                    tmpLabel.setName("Kreuz");
+                    tmpLabel.setToolTipText(tmpLabel.getName());
+                    break;
+                }
+                case 93: {
+                    tmpLabel.setName("Pik");
+                    tmpLabel.setToolTipText(tmpLabel.getName());
+                    break;
+                }
+            }
+            panel.add(tmpLabel);
+
+            tmpLabel.addMouseListener(new MouseAdapter() {
+                // Überschreiben der Clicked-Methode
+                public void mouseClicked(MouseEvent arg0) {
+                    try {
+                        
+                        // Farbe der gewählten Karte zwischenspeichern und weiterverarbeiten in Switch
+                        String gewaehlteFarbe = arg0.getComponent().getName();
+                        String tmpFarbe = null;
+                        switch (gewaehlteFarbe) {
+                            case "Herz": {
+                                server.alleSpielerFensterAktualisieren(90);
+                                // Fenster zernichten!!!!!!
+                                frageFenster.dispose();
+                                break;
+                            }
+                            case "Karo": {
+                                server.alleSpielerFensterAktualisieren(91);
+                                // Fenster zernichten!!!!!!
+                                frageFenster.dispose();
+                                break;
+                            }
+                            case "Kreuz": {
+                                server.alleSpielerFensterAktualisieren(92);
+                                // Fenster zernichten!!!!!!
+                                frageFenster.dispose();
+                                break;
+                            }
+                            case "Pik": {
+                                server.alleSpielerFensterAktualisieren(93);
+                                // Fenster zernichten!!!!!!
+                                frageFenster.dispose();
+                                break;
+                            }
+                        }
+                        
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(SpielFenster.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+            
+        }
+        
+        
+        // Jetzt sind Karten erstellt, jetzt das JFrame packen und dann erst anzeigen
+        frageFenster.pack();
+        frageFenster.setLocationRelativeTo(null);
+        frageFenster.setTitle("Wähle eine Farbe!");
+        frageFenster.setVisible(true);
     }
 }

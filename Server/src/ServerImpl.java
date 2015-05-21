@@ -254,6 +254,7 @@ public class ServerImpl implements IServer, Serializable {
                     tmpHand.remove(tmpHand.get(i));
                     aktiverSpieler.setZiehenCounter(0);
                     miauMiauPruefen(aktiverSpieler);
+                    aktiverSpieler.nachFarbeFragen();
                     spielerWechseln();
                     zugCounter++;
                     
@@ -263,8 +264,6 @@ public class ServerImpl implements IServer, Serializable {
                         readyListe.get(j).karteGrafischEntfernen(selectedCardID);
                         readyListe.get(j).spielFensterAktualisieren(selectedCardID);
                     }
-                    
-                    aktiverSpieler.nachFarbeFragen();
                     
                     break;
                 }
@@ -377,5 +376,17 @@ public class ServerImpl implements IServer, Serializable {
                     }
                     broadcastMessage("\n" + client.getBenutzername() + " hat alle Karten abgelegt! Wir haben einen neuen Katzenmeister! Meeeow!");
                 }
+    }
+
+    @Override
+    public void skipNaechstenSpieler() throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void alleSpielerFensterAktualisieren(int kartenid) throws RemoteException {
+        for (int i = 0; i < readyListe.size(); i++) {
+            readyListe.get(i).spielFensterAktualisieren(kartenid);
+        }
     }
 }
